@@ -65,20 +65,32 @@ public class UserServiceImpl implements UserService {
         if (isValidUser(userId)) {
             userRepository.removeUser(userId);
         } else {
-            throw new UserNotFoundException("User " + userId + " is not found");
+            throw new UserNotFoundException("Пользователь не найден");
         }
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto) {
-        User user = userMapper.toUser(userDto);
+    public UserDto updateUser(UserDto userDto, Long userId) {
 
-        User userFromDb = userRepository.getUserById(user.getUserId());
-        if (userFromDb != null) {
-            return userMapper.toUserDto(userRepository.updateUser(user));
-        } else {
-            throw new UserNotFoundException("id " + user.getUserId() + " не найден");
+        if (userDto.getUserId() == null) {
+            userDto.setUserId(userId);
         }
+        return userMapper.toUserDto(userRepository.updateUser(userMapper.toUser(userDto)));
+
+//        User user;
+//
+//        if (isValidUser(userId)) {
+//            user = userMapper.toUser(userDto);
+//        }
+//
+////        User user = userMapper.toUser(userDto);
+//
+//        User userFromDb = userRepository.getUserById(user.getUserId());
+//        if (userFromDb != null) {
+//            return userMapper.toUserDto(userRepository.updateUser(user));
+//        } else {
+//            throw new UserNotFoundException("id " + user.getUserId() + " не найден");
+//        }
     }
 
     @Override
@@ -99,7 +111,11 @@ public class UserServiceImpl implements UserService {
 
     //Проверка наличия пользователя в хранилище
     public boolean isValidUser(Long userId) {
-        return userRepository.getUserById(userId) != null;
+        if (userRepository.getUserById(userId) != null) {
+            return true;
+        }
+        return false;
+//        return userRepository.getUserById(userId) != null;
     }
 
 //    private String getDisplayedName(User user) {

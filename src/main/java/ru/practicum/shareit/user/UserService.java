@@ -10,7 +10,7 @@ public interface UserService {
 
     void removeUser(Long userId); // удаление пользователя
 
-    UserDto updateUser(UserDto userDto); //модификация, обновление пользователя
+    UserDto updateUser(UserDto userDto, Long userId); //модификация, обновление пользователя
 
     Collection<UserDto> getUsers(); // Получение всех пользователей
 
