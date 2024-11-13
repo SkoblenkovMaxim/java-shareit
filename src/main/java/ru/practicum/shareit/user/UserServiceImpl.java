@@ -32,23 +32,10 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserDto userDto) {
         User user = userMapper.toUser(userDto);
 
-//        if (user == null) {
-//            throw new UserNotFoundException("User not found");
-//        }
-//
-//        if (userRepository.getUsers().contains(user)) {
-//            log.debug("Пользователь с id={} уже существует", user.getUserId());
-//            throw new UserNotFoundException("Пользователь с id=" + user.getUserId() + " уже существует");
-//        }
-//
-//        if (user.getUserName() == null || user.getUserName().isEmpty()) {
-//            throw new ValidationException("Отсутствует имя пользователя");
-//        }
-//
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
             throw new ValidationException("Отсутствует email пользователя");
         }
-//
+
         if (userRepository.getUsers().stream()
                 .anyMatch(user2 -> user2.getEmail().equals(user.getEmail()))) {
             log.error("email={} уже используется", user.getEmail());
@@ -76,21 +63,6 @@ public class UserServiceImpl implements UserService {
             userDto.setId(userId);
         }
         return userMapper.toUserDto(userRepository.updateUser(userMapper.toUser(userDto)));
-
-//        User user;
-//
-//        if (isValidUser(userId)) {
-//            user = userMapper.toUser(userDto);
-//        }
-//
-////        User user = userMapper.toUser(userDto);
-//
-//        User userFromDb = userRepository.getUserById(user.getUserId());
-//        if (userFromDb != null) {
-//            return userMapper.toUserDto(userRepository.updateUser(user));
-//        } else {
-//            throw new UserNotFoundException("id " + user.getUserId() + " не найден");
-//        }
     }
 
     @Override
@@ -115,10 +87,5 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         return false;
-//        return userRepository.getUserById(userId) != null;
     }
-
-//    private String getDisplayedName(User user) {
-//        return user.getUserName() != null && !user.getUserName().isBlank() ? user.getUserName() : user.getEmail();
-//    }
 }
