@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.model;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,10 +13,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class User {
-    private Long userId; // уникальный идентификатор
-//    @NotBlank
-    private String userName; // имя или логин пользователя
+    private Long id; // уникальный идентификатор
+    @NotBlank
+    @NotNull
+    private String name; // имя или логин пользователя
     @Email
-//    @NotBlank
+    @NotBlank
+    @NotNull
     private String email; // почта пользователя
 }

@@ -72,8 +72,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(UserDto userDto, Long userId) {
 
-        if (userDto.getUserId() == null) {
-            userDto.setUserId(userId);
+        if (userDto.getId() == null) {
+            userDto.setId(userId);
         }
         return userMapper.toUserDto(userRepository.updateUser(userMapper.toUser(userDto)));
 

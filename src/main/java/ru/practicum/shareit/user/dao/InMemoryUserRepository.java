@@ -30,9 +30,9 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public User createUser(User newUser) {
 
-        newUser.setUserId(count++);
+        newUser.setId(count++);
 
-        allUsers.put(newUser.getUserId(), newUser);
+        allUsers.put(newUser.getId(), newUser);
         return newUser;
     }
 
@@ -65,17 +65,17 @@ public class InMemoryUserRepository implements UserRepository {
 //            throw new UserNotFoundException("id " + user.getUserId() + " не найден");
 //        }
 
-        if (user.getUserName() == null) {
-            user.setUserName(allUsers.get(user.getUserId()).getUserName());
+        if (user.getName() == null) {
+            user.setName(allUsers.get(user.getId()).getName());
         }
         if (user.getEmail() == null) {
-            user.setEmail(allUsers.get(user.getUserId()).getEmail());
+            user.setEmail(allUsers.get(user.getId()).getEmail());
         }
         if (allUsers.values().stream()
                 .filter(u -> u.getEmail().equals(user.getEmail()))
-                .allMatch(u -> u.getUserId().equals(user.getUserId()))) {
+                .allMatch(u -> u.getId().equals(user.getId()))) {
             if (isValidUser(user)) {
-                allUsers.put(user.getUserId(), user);
+                allUsers.put(user.getId(), user);
             }
         } else {
             throw new UserAlreadyExistsException("Пользователь с E-mail=" + user.getEmail() + " уже существует!");
@@ -116,8 +116,8 @@ public class InMemoryUserRepository implements UserRepository {
         if (!user.getEmail().contains("@")) {
             throw new ValidationException("Некорректный e-mail пользователя: " + user.getEmail());
         }
-        if ((user.getUserName().isEmpty()) || (user.getUserName().contains(" "))) {
-            throw new ValidationException("Некорректный логин пользователя: " + user.getUserName());
+        if ((user.getName().isEmpty()) || (user.getName().contains(" "))) {
+            throw new ValidationException("Некорректный логин пользователя: " + user.getName());
         }
         return true;
 
