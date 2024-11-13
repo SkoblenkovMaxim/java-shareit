@@ -1,21 +1,22 @@
-package ru.practicum.shareit.item.dao;
+package ru.practicum.shareit.item;
 
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
-public interface ItemRepository {
+public interface ItemService {
     // добавление вещи
-    Item add(Item item);
+    ItemDto add(ItemDto item, Long ownerId);
 
     // обновление вещи
-    Item update(Item item);
+    ItemDto update(ItemDto item);
 
     // получение списка вещей владельца
-    List<Item> getItemsByOwner(Long ownerId);
+    List<ItemDto> getItemsByOwner(Long ownerId);
 
     // получение списка вещей по запросу пользователя
-    List<Item> getItemsBySearchQuery(String text);
+    List<ItemDto> getItemsBySearchQuery(String text);
 
     // удаление вещи
     void delete(Long itemId);
@@ -24,5 +25,5 @@ public interface ItemRepository {
     void deleteItemsByOwner(Long ownerId);
 
     // получение вещи по id
-    Item getItemById(Long itemId);
+    ItemDto getItemById(Long itemId);
 }

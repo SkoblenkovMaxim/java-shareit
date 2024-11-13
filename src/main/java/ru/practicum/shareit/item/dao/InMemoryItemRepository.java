@@ -9,17 +9,17 @@ import java.util.Map;
 
 @Repository
 public class InMemoryItemRepository implements ItemRepository {
-    private final Map<Long, Item> items = new HashMap<>();
+    private Map<Long, Item> items;
+    private Long count;
 
-    // счетчик ид вещи
-    protected Long getNextId() {
-        return (long) items.size() + 1;
+    public InMemoryItemRepository() {
+        items = new HashMap<>();
+        count = 0L;
     }
-
     // добавление новой вещи
     @Override
     public Item add(Item itemDto) {
-        itemDto.setItemId(getNextId());
+        itemDto.setItemId(count++);
         items.put(itemDto.getItemId(), itemDto);
         return itemDto;
     }
@@ -31,12 +31,6 @@ public class InMemoryItemRepository implements ItemRepository {
         return item;
     }
 
-    // просмотр информации о вещи
-    @Override
-    public Item getItemById(Long itemId) {
-        return items.get(itemId);
-    }
-
     // получение списка вещей владельца
     @Override
     public List<Item> getItemsByOwner(Long ownerId) {
@@ -46,8 +40,26 @@ public class InMemoryItemRepository implements ItemRepository {
         return itemsOwner;
     }
 
+    // получение списка вещей по запросу пользователя
+    @Override
+    public List<Item> getItemsBySearchQuery(String text) {
+        return null;
+    }
+
     // удаление вещи
     public void delete(Long itemId) {
         items.remove(itemId);
+    }
+
+    // удаление вещей владельца
+    @Override
+    public void deleteItemsByOwner(Long ownerId) {
+
+    }
+
+    // просмотр информации о вещи по id
+    @Override
+    public Item getItemById(Long itemId) {
+        return items.get(itemId);
     }
 }
