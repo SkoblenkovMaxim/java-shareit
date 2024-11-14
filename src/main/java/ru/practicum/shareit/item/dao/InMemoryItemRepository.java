@@ -1,49 +1,73 @@
 package ru.practicum.shareit.item.dao;
 
-import org.springframework.stereotype.Repository;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Repository
+import static java.util.stream.Collectors.toList;
+
+@Slf4j
+@Getter
+@Component
 public class InMemoryItemRepository implements ItemRepository {
-    private Map<Long, Item> items;
-    private Long count;
+    private final Map<Long, Item> items = new HashMap<>();
+    private Long count = 0L;
 
     public InMemoryItemRepository() {
-        items = new HashMap<>();
-        count = 0L;
     }
     // добавление новой вещи
     @Override
-    public Item add(Item itemDto) {
-        itemDto.setItemId(count++);
-        items.put(itemDto.getItemId(), itemDto);
-        return itemDto;
+    public Item add(Item item) {
+        item.setId(count++);
+        items.put(item.getId(), item);
+        return item;
     }
 
     // редактирование вещи
     @Override
     public Item update(Item item) {
-        items.put(item.getItemId(), item);
+        items.put(item.getId(), item);
         return item;
     }
 
     // получение списка вещей владельца
     @Override
     public List<Item> getItemsByOwner(Long ownerId) {
-        List<Item> itemsOwner = items.values().stream()
+        return items.values().stream()
                 .filter(item -> item.getOwnerId().equals(ownerId))
                 .toList();
-        return itemsOwner;
     }
 
     // получение списка вещей по запросу пользователя
     @Override
     public List<Item> getItemsBySearchQuery(String text) {
-        return null;
+        List<Item> resultSearch = new ArrayList<>();
+//        if (!text.isBlank()) {
+//            for (Item item : items.values()) {
+//                if (item.getAvailable()) {
+//                    if (item.getName().toLowerCase().contains(text.toLowerCase())
+//                            || item.getDescription().toLowerCase().contains(text.toLowerCase())) {
+//                        resultSearch.add(item);
+//                    }
+//                }
+//            }
+//        }
+
+        if (!text.isBlank()) {
+            resultSearch = items.values().stream()
+                    .filter(item -> item.getAvailable())
+                    .filter(item -> item.getName().toLowerCase().contains(text) ||
+                            item.getDescription().toLowerCase().contains(text))
+                    .collect(toList());
+        }
+
+        return resultSearch;
     }
 
     // удаление вещи
@@ -54,7 +78,13 @@ public class InMemoryItemRepository implements ItemRepository {
     // удаление вещей владельца
     @Override
     public void deleteItemsByOwner(Long ownerId) {
-
+        List<Long> deleteItems = new ArrayList<>(items.values().stream()
+                .filter(item -> item.getOwnerId().equals(ownerId))
+                .map(Item::getId)
+                .toList());
+        for (Long deleteItem : deleteItems) {
+            items.remove(deleteItem);
+        }
     }
 
     // просмотр информации о вещи по id

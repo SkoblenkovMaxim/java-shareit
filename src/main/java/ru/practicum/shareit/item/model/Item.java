@@ -11,8 +11,8 @@ import ru.practicum.shareit.request.ItemRequest;
 @NoArgsConstructor
 @Data
 public class Item {
-    private Long itemId; // id вещи
-    @NotBlank
+    private Long id; // id вещи
+//    @NotBlank
     private String name; // краткое название вещи
     @Size(min = 1, max = 255, message = "Описание должно быть больше 1 и меньше 255 символов")
     private String description; // описание

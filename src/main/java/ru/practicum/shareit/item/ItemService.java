@@ -10,7 +10,7 @@ public interface ItemService {
     ItemDto add(ItemDto item, Long ownerId);
 
     // обновление вещи
-    ItemDto update(ItemDto item);
+    ItemDto update(ItemDto itemDto, Long ownerId, Long id);
 
     // получение списка вещей владельца
     List<ItemDto> getItemsByOwner(Long ownerId);
@@ -19,7 +19,7 @@ public interface ItemService {
     List<ItemDto> getItemsBySearchQuery(String text);
 
     // удаление вещи
-    void delete(Long itemId);
+    void deleteItem(Long itemId, Long ownerId);
 
     // удаление вещей владельца
     void deleteItemsByOwner(Long ownerId);
