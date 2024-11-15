@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.stream.Collectors.toList;
-
 @Slf4j
 @Getter
 @Component
@@ -50,7 +48,7 @@ public class InMemoryItemRepository implements ItemRepository {
         List<Item> resultSearch = new ArrayList<>();
         if (!text.isBlank()) {
             for (Item item : items.values()) {
-                if (item.getAvailable()) {
+                if (item.getAvailable() != null && item.getAvailable()) {
                     if (item.getName().toUpperCase().contains(text.toUpperCase())
                             || item.getDescription().toUpperCase().contains(text.toUpperCase())) {
                         resultSearch.add(item);
@@ -58,14 +56,6 @@ public class InMemoryItemRepository implements ItemRepository {
                 }
             }
         }
-
-//        if (!text.isBlank()) {
-//            resultSearch = items.values().stream()
-//                    .filter(Item::getAvailable)
-//                    .filter(item -> item.getName().toUpperCase().contains(text) ||
-//                            item.getDescription().toUpperCase().contains(text))
-//                    .collect(toList());
-//        }
 
         return resultSearch;
     }

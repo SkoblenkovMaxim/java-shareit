@@ -13,7 +13,6 @@ import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
