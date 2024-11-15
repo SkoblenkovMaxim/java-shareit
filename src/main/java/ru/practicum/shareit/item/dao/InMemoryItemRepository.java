@@ -19,6 +19,7 @@ public class InMemoryItemRepository implements ItemRepository {
 
     public InMemoryItemRepository() {
     }
+
     // добавление новой вещи
     @Override
     public Item add(Item item) {
