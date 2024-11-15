@@ -83,7 +83,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItemsBySearchQuery(String text) {
-        text = text.toLowerCase();
+        text = text.toUpperCase();
             return itemRepository.getItemsBySearchQuery(text)
                     .stream()
                     .map(itemMapper::toItemDto)

@@ -48,24 +48,24 @@ public class InMemoryItemRepository implements ItemRepository {
     @Override
     public List<Item> getItemsBySearchQuery(String text) {
         List<Item> resultSearch = new ArrayList<>();
-//        if (!text.isBlank()) {
-//            for (Item item : items.values()) {
-//                if (item.getAvailable()) {
-//                    if (item.getName().toLowerCase().contains(text.toLowerCase())
-//                            || item.getDescription().toLowerCase().contains(text.toLowerCase())) {
-//                        resultSearch.add(item);
-//                    }
-//                }
-//            }
-//        }
-
         if (!text.isBlank()) {
-            resultSearch = items.values().stream()
-                    .filter(item -> item.getAvailable())
-                    .filter(item -> item.getName().toLowerCase().contains(text) ||
-                            item.getDescription().toLowerCase().contains(text))
-                    .collect(toList());
+            for (Item item : items.values()) {
+                if (item.getAvailable()) {
+                    if (item.getName().toUpperCase().contains(text.toUpperCase())
+                            || item.getDescription().toUpperCase().contains(text.toUpperCase())) {
+                        resultSearch.add(item);
+                    }
+                }
+            }
         }
+
+//        if (!text.isBlank()) {
+//            resultSearch = items.values().stream()
+//                    .filter(Item::getAvailable)
+//                    .filter(item -> item.getName().toUpperCase().contains(text) ||
+//                            item.getDescription().toUpperCase().contains(text))
+//                    .collect(toList());
+//        }
 
         return resultSearch;
     }
