@@ -23,15 +23,15 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto addItem(@Valid @RequestBody ItemDto itemDto, @RequestHeader(owner) Long id) {
+    public ItemDto addItem(@Valid @RequestBody ItemDto itemDto, @Valid @RequestHeader(owner) Long id) {
         log.info("Получен запрос на добавление вещи пользователем с ownerId: {}", id);
         return itemService.add(itemDto, id);
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(
-            @Valid @RequestBody ItemDto itemDto,
-            @RequestHeader(owner) Long ownerId,
+             @RequestBody ItemDto itemDto,
+            @Valid @RequestHeader(owner) Long ownerId,
             @Valid @PathVariable Long itemId) {
         return itemService.update(itemDto, ownerId, itemId);
     }

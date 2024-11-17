@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.UserAlreadyExistsException;
-import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -49,11 +48,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void removeUser(Long userId) {
-        if (isValidUser(userId)) {
+//        if (isValidUser(userId)) {
             userRepository.removeUser(userId);
-        } else {
-            throw new UserNotFoundException("Пользователь не найден");
-        }
     }
 
     @Override
@@ -75,17 +71,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserById(Long userId) {
         User user = userRepository.getUserById(userId);
-        if (user == null) {
-            throw new UserNotFoundException("User " + userId + " is not found");
-        }
         return userMapper.toUserDto(user);
-    }
-
-    //Проверка наличия пользователя в хранилище
-    public boolean isValidUser(Long userId) {
-        if (userRepository.getUserById(userId) != null) {
-            return true;
-        }
-        return false;
     }
 }

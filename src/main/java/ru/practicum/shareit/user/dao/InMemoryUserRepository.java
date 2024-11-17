@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.UserAlreadyExistsException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
@@ -71,7 +71,7 @@ public class InMemoryUserRepository implements UserRepository {
             return oldUser;
         }
         log.debug("id={} не найден", user.getId());
-        throw new UserNotFoundException("id " + user.getId() + " не найден");
+        throw new NotFoundException("id " + user.getId() + " не найден");
     }
 
     // Получение списка всех пользователей
@@ -87,7 +87,7 @@ public class InMemoryUserRepository implements UserRepository {
             return allUsers.get(userId);
         }
         log.debug("Пользователь с id={} не найден", userId);
-        throw new UserNotFoundException("Пользователь с id=" + userId + " не найден");
+        throw new NotFoundException("Пользователь с id=" + userId + " не найден");
     }
 
     public boolean isValidUser(User user) {
@@ -96,6 +96,6 @@ public class InMemoryUserRepository implements UserRepository {
             return true;
         }
         log.debug("Пользователь с id={} не найден", user.getId());
-        throw new UserNotFoundException("Пользователь с id=" + user.getId() + " не найден");
+        throw new NotFoundException("Пользователь с id=" + user.getId() + " не найден");
     }
 }
