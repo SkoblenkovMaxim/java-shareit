@@ -1,11 +1,17 @@
 package ru.practicum.shareit.booking;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
+@Entity
+@Table(name = "bookings")
+@lombok.Getter
+@lombok.Setter
+@lombok.ToString
 public class Booking {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookingId;
     private LocalDateTime start;
     private LocalDateTime end;
