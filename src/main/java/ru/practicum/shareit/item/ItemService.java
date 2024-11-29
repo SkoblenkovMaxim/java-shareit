@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import java.util.List;
@@ -25,4 +26,7 @@ public interface ItemService {
 
     // получение вещи по id
     ItemDto getItemById(Long itemId);
+
+    // Создание комментария
+    CommentDto addComment(CommentDto commentDto, Long itemId, Long userId);
 }
