@@ -2,8 +2,8 @@ package ru.practicum.shareit.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.UserAlreadyExistsException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dao.UserRepository;
@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Autowired
-    public UserServiceImpl(@Qualifier("inMemoryUserRepository") UserRepository userRepository,
+    public UserServiceImpl(UserRepository userRepository,
                            UserMapper userMapper) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
@@ -35,13 +35,13 @@ public class UserServiceImpl implements UserService {
             throw new ValidationException("Отсутствует email пользователя");
         }
 
-        if (userRepository.getUsers().stream()
+        if (userRepository.findAll().stream()
                 .anyMatch(user2 -> user2.getEmail().equals(user.getEmail()))) {
             log.error("email={} уже используется", user.getEmail());
             throw new UserAlreadyExistsException("email=" + user.getEmail() + " уже используется");
         }
 
-        User user1 = userRepository.createUser(user);
+        User user1 = userRepository.save(user);
 
         return userMapper.toUserDto(user1);
     }
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void removeUser(Long userId) {
 //        if (isValidUser(userId)) {
-            userRepository.removeUser(userId);
+            userRepository.deleteById(userId);
     }
 
     @Override
@@ -58,19 +58,36 @@ public class UserServiceImpl implements UserService {
         if (userDto.getId() == null) {
             userDto.setId(userId);
         }
-        return userMapper.toUserDto(userRepository.updateUser(userMapper.toUser(userDto)));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        if (userDto.getName() != null) {
+            user.setName(userDto.getName());
+        }
+
+        if (userRepository.findAll().stream()
+                .filter(user2 -> user.getEmail().equals(userDto.getEmail()))
+                .anyMatch(user2 -> user2.getId().equals(userDto.getId()))) {
+            user.setEmail(userDto.getEmail());
+        } else {
+            log.error("email={} уже используется", user.getEmail());
+            throw new UserAlreadyExistsException("email=" + user.getEmail() + " уже используется");
+        }
+
+        return userMapper.toUserDto(userRepository.save(userMapper.toUser(userDto)));
     }
 
     @Override
     public Collection<UserDto> getUsers() {
-        return userRepository.getUsers().stream()
+        return userRepository.findAll().stream()
                 .map(userMapper::toUserDto)
                 .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
     }
 
     @Override
     public UserDto getUserById(Long userId) {
-        User user = userRepository.getUserById(userId);
+        User user = userRepository.getReferenceById(userId);
         return userMapper.toUserDto(user);
     }
 }
