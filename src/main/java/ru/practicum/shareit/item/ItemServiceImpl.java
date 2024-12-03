@@ -20,6 +20,18 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class ItemServiceImpl implements ItemService {
 
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
+    private ItemMapper itemMapper;
+
+    @Autowired
+    public ItemServiceImpl(ItemRepository itemRepository,
+                           UserRepository userRepository,
+                           ItemMapper itemMapper) {
+        this.itemRepository = itemRepository;
+        this.userRepository = userRepository;
+        this.itemMapper = itemMapper;
+    }
 
     @Override
     public ItemDto add(ItemDto item, Long ownerId) {
