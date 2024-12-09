@@ -19,7 +19,6 @@ public class User {
     @Column(name = "id")
     private Long id; // уникальный идентификатор
 
-
     private String name; // имя или логин пользователя
 
     @Email

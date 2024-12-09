@@ -22,11 +22,14 @@ public interface ItemService {
     void deleteItem(Long itemId, Long ownerId);
 
     // удаление вещей владельца
-    void deleteItemsByOwner(Long ownerId);
+    void deleteItemsByOwnerId(Long ownerId);
 
     // получение вещи по id
     ItemDto getItemById(Long itemId);
 
     // Создание комментария
     CommentDto addComment(CommentDto commentDto, Long itemId, Long userId);
+
+    // Поиск комментария по идентификатору вещи
+    List<CommentDto> getCommentsByItemId(Long itemId);
 }

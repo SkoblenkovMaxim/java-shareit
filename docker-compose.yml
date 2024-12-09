@@ -2,12 +2,12 @@ services:
   db:
     image: postgres:16.6
     ports:
-      - "6433:5433"
+      - "6432:5432"
     volumes:
       - ./volumes/postgres:/var/lib/postgresql/data/
     environment:
       - POSTGRES_DB=shareit
-      - POSTGRES_USER=dbuser
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=12345
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
