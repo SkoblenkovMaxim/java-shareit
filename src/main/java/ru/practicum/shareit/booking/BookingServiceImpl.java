@@ -45,14 +45,14 @@ public class BookingServiceImpl implements BookingService {
 //            throw new NotFoundException("Пользователь не найден");
 //        }
 
-//        if (bookingInputDto.getItemId() == null) {
-//            throw new NotFoundException("Вещь не найдена");
-//        }
+        if (bookingInputDto.getItemId() == null) {
+            throw new NotFoundException("Вещь не найдена");
+        }
 
-//        if (!itemService.getItemById(bookingInputDto.getItemId()).getAvailable()) {
-//            throw new ValidationException("Вещь с ID=" + bookingInputDto.getItemId() +
-//                    " недоступна для бронирования!");
-//        }
+        if (!itemService.getItemById(bookingInputDto.getItemId()).getAvailable()) {
+            throw new ValidationException("Вещь с ID=" + bookingInputDto.getItemId() +
+                    " недоступна для бронирования!");
+        }
         Booking booking = mapper.toBooking(bookingInputDto, bookerId);
         if (bookerId.equals(booking.getItem().getOwner().getId())) {
             throw new NotFoundException("Вещь с ID=" + bookingInputDto.getItemId() +
@@ -219,5 +219,4 @@ public class BookingServiceImpl implements BookingService {
         return repository.findFirstByItem_IdAndBooker_IdAndEndIsBeforeAndStatus(itemId,
                 userId, LocalDateTime.now(), Status.APPROVED);
     }
-
 }
