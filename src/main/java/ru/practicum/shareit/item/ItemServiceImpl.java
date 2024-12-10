@@ -18,6 +18,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dao.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -57,10 +58,14 @@ public class ItemServiceImpl implements ItemService {
 //        if (ownerId == null) {
 //            throw new NotFoundException("Пользователь не найден");
 //        }
+        User user = userRepository.findById(ownerId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id=" + ownerId + " не найден"));
+
+        itemDto.setOwner(user);
 //
-        if (!userRepository.existsById(ownerId)) {
-            throw new NotFoundException("Пользователь с id=" + ownerId + " не найден");
-        }
+//        if (!userRepository.existsById(ownerId)) {
+//            throw new NotFoundException("Пользователь с id=" + ownerId + " не найден");
+//        }
 
 //        Item item = itemMapper.toItem(itemDto, ownerId);
 //
@@ -113,7 +118,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> getItemsBySearchQuery(String text) {
         text = text.toUpperCase();
-            return itemRepository.getItemsBySearchQuery(text)
+            return itemRepository.findByNameIgnoreCaseAndAvailableTrue(text)
                     .stream()
                     .map(itemMapper::toItemDto)
                     .collect(toList());

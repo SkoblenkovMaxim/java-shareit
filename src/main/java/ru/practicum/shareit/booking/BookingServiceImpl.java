@@ -41,14 +41,18 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto create(BookingInputDto bookingInputDto, Long bookerId) {
 
-        if (userService.getUserById(bookerId) == null) {
-            throw new NotFoundException("Пользователь не найден");
-        }
+//        if (userService.getUserById(bookerId) == null) {
+//            throw new NotFoundException("Пользователь не найден");
+//        }
 
-        if (!itemService.getItemById(bookingInputDto.getItemId()).getAvailable()) {
-            throw new ValidationException("Вещь с ID=" + bookingInputDto.getItemId() +
-                    " недоступна для бронирования!");
-        }
+//        if (bookingInputDto.getItemId() == null) {
+//            throw new NotFoundException("Вещь не найдена");
+//        }
+
+//        if (!itemService.getItemById(bookingInputDto.getItemId()).getAvailable()) {
+//            throw new ValidationException("Вещь с ID=" + bookingInputDto.getItemId() +
+//                    " недоступна для бронирования!");
+//        }
         Booking booking = mapper.toBooking(bookingInputDto, bookerId);
         if (bookerId.equals(booking.getItem().getOwner().getId())) {
             throw new NotFoundException("Вещь с ID=" + bookingInputDto.getItemId() +

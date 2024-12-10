@@ -24,6 +24,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             " or lower(i.description) like lower(concat('%', :search, '%')) " +
             " and i.available = true")
     List<Item> getItemsBySearchQuery(@Param("search") String text);
+
+    List<Item> findByNameIgnoreCaseAndAvailableTrue(String text);
 //
 //    // удаление вещи
 //    void delete(Long itemId);

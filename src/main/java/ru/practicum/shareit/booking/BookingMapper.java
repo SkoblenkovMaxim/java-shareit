@@ -32,9 +32,9 @@ public class BookingMapper {
                     booking.getId(),
                     booking.getStart(),
                     booking.getEnd(),
-                    itemMapper.toItemDto(booking.getItem()),
+                    booking.getStatus(),
                     userMapper.toUserDto(booking.getBooker()),
-                    booking.getStatus()
+                    itemMapper.toItemDto(booking.getItem())
             );
         } else {
             return null;
@@ -59,9 +59,10 @@ public class BookingMapper {
                 null,
                 bookingInputDto.getStart(),
                 bookingInputDto.getEnd(),
-                itemMapper.toItem(itemService.getItemById(bookingInputDto.getItemId()), bookerId),
+                Status.WAITING,
                 userMapper.toUser(userService.getUserById(bookerId)),
-                Status.WAITING
+                itemMapper.toItem(itemService.getItemById(bookingInputDto.getItemId()), bookerId)
+
         );
     }
 }

@@ -55,6 +55,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(UserDto userDto, Long userId) {
 
+        if (userRepository.existsByEmail(userDto.getEmail()))
+            throw new UserAlreadyExistsException("Такой email у пользователя уже существует");
+
         if (userDto.getId() == null) {
             userDto.setId(userId);
         }

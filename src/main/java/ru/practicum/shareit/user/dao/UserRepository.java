@@ -6,6 +6,8 @@ import ru.practicum.shareit.user.model.User;
 import java.util.Collection;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    boolean existsByEmail(String email);
 //    User createUser(User user); // добавление пользователя
 //
 //    void removeUser(Long userId); // удаление пользователя
