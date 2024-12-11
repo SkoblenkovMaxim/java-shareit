@@ -6,6 +6,7 @@ import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import lombok.Data;
@@ -13,7 +14,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookingDto {
+public class BookingDto implements Serializable {
     private Long id;
     private LocalDateTime start;
     private LocalDateTime end;

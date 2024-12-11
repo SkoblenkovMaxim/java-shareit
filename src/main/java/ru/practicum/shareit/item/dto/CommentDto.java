@@ -6,12 +6,13 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dto.UserDto;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class CommentDto {
+public class CommentDto implements Serializable {
     private Long id; // идентификатор комментария
     private String text; // Текст комментария
     private String authorName;
