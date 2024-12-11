@@ -12,10 +12,10 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 
 @Component
 public class BookingMapper {
-    private UserService userService;
-    private ItemService itemService;
-    private UserMapper userMapper;
-    private ItemMapper itemMapper;
+    private final UserService userService;
+    private final ItemService itemService;
+    private final UserMapper userMapper;
+    private final ItemMapper itemMapper;
 
     @Autowired
     public BookingMapper(UserService userService, ItemService itemService,
@@ -62,7 +62,6 @@ public class BookingMapper {
                 Status.WAITING,
                 userMapper.toUser(userService.getUserById(bookerId)),
                 itemMapper.toItem(itemService.getItemById(bookingInputDto.getItemId()), bookerId)
-
         );
     }
 }

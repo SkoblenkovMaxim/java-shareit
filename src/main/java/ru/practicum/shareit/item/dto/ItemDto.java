@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import java.io.Serializable;
 import java.util.List;
@@ -25,9 +25,7 @@ public class ItemDto implements Serializable {
     private String description; // описание
     @NotNull
     private Boolean available; // статус доступности
-//    @JsonIgnore
-//    @NotNull
-    private User owner;
+    private UserDto owner;
     private Long requestId; // id запроса вещи
     private BookingShortDto lastBooking;
     private BookingShortDto nextBooking;

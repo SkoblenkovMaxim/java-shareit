@@ -9,7 +9,6 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
-
 @Entity
 @Table(name = "comments")
 @Builder

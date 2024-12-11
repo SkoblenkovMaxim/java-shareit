@@ -41,10 +41,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto create(BookingInputDto bookingInputDto, Long bookerId) {
 
-//        if (userService.getUserById(bookerId) == null) {
-//            throw new NotFoundException("Пользователь не найден");
-//        }
-
         if (bookingInputDto.getItemId() == null) {
             throw new NotFoundException("Вещь не найдена");
         }
@@ -53,7 +49,9 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException("Вещь с ID=" + bookingInputDto.getItemId() +
                     " недоступна для бронирования!");
         }
+
         Booking booking = mapper.toBooking(bookingInputDto, bookerId);
+
         if (bookerId.equals(booking.getItem().getOwner().getId())) {
             throw new NotFoundException("Вещь с ID=" + bookingInputDto.getItemId() +
                     " недоступна для бронирования самим владельцем!");
@@ -70,6 +68,7 @@ public class BookingServiceImpl implements BookingService {
 
         Booking booking = repository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Бронирование с ID=" + bookingId + " не найдено!"));
+
         if (booking.getEnd().isBefore(LocalDateTime.now())) {
             throw new ValidationException("Время бронирования уже истекло!");
         }
@@ -132,6 +131,7 @@ public class BookingServiceImpl implements BookingService {
 
         List<Booking> bookings;
         Sort sortByStartDesc = Sort.by(Sort.Direction.DESC, "start");
+
         switch (state) {
             case "ALL":
                 bookings = repository.findByBookerId(userId, sortByStartDesc);
@@ -200,22 +200,21 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingShortDto getLastBooking(Long itemId) {
-        BookingShortDto bookingShortDto =
-                mapper.toBookingShortDto(repository.findFirstByItem_IdAndEndBeforeOrderByEndDesc(itemId,
-                        LocalDateTime.now()));
-        return bookingShortDto;
+
+        return mapper.toBookingShortDto(repository.findFirstByItem_IdAndEndBeforeOrderByEndDesc(itemId,
+                LocalDateTime.now()));
     }
 
     @Override
     public BookingShortDto getNextBooking(Long itemId) {
-        BookingShortDto bookingShortDto =
-                mapper.toBookingShortDto(repository.findFirstByItem_IdAndStartAfterOrderByStartAsc(itemId,
-                        LocalDateTime.now()));
-        return bookingShortDto;
+
+        return mapper.toBookingShortDto(repository.findFirstByItem_IdAndStartAfterOrderByStartAsc(itemId,
+                LocalDateTime.now()));
     }
 
     @Override
     public Booking getBookingWithUserBookedItem(Long itemId, Long userId) {
+
         return repository.findFirstByItem_IdAndBooker_IdAndEndIsBeforeAndStatus(itemId,
                 userId, LocalDateTime.now(), Status.APPROVED);
     }

@@ -9,12 +9,7 @@ import ru.practicum.shareit.user.model.User;
 import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
-//    // добавление вещи
-//    Item add(Item item);
-//
-//    // обновление вещи
-//    Item update(Item item);
-//
+
     // получение списка вещей владельца
     List<Item> getItemsByOwner(User owner);
 
@@ -26,13 +21,4 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> getItemsBySearchQuery(@Param("search") String text);
 
     List<Item> findByNameIgnoreCaseAndAvailableTrue(String text);
-//
-//    // удаление вещи
-//    void delete(Long itemId);
-//
-//    // удаление вещей владельца
-//    void deleteItemsByOwner(Long ownerId);
-//
-//    // получение вещи по id
-//    Item getItemById(Long itemId);
 }

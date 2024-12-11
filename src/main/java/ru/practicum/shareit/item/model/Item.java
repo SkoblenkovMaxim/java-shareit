@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +25,6 @@ public class Item {
 
     private Boolean available; // статус доступности
 
-//    @NotNull
     @ManyToOne
     @JoinColumn(name = "owner", referencedColumnName = "id")
     private User owner; // id владельца вещи
