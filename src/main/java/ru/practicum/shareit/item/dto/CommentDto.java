@@ -7,18 +7,18 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class CommentDto implements Serializable {
+public class CommentDto {
     private Long id; // идентификатор комментария
     private String text; // Текст комментария
     private String authorName;
     @JsonIgnore
     private Item item; // Вещь, к которой относится комментарий
+    @JsonIgnore
     private UserDto author; // Автор комментария
     private LocalDateTime created; // Дата и время создания комментария
 }
