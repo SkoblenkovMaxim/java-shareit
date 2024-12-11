@@ -5,12 +5,11 @@ import jakarta.validation.constraints.FutureOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-public class BookingInputDto implements Serializable {
+public class BookingInputDto {
 
     private Long itemId;
     @FutureOrPresent
