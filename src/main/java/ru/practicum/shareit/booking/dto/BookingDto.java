@@ -1,13 +1,12 @@
 package ru.practicum.shareit.booking.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Transient;
 import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import lombok.Data;
@@ -15,12 +14,12 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookingDto implements Serializable {
+public class BookingDto {
     private Long id;
     private LocalDateTime start;
     private LocalDateTime end;
     private Status status;
-    @Transient
+    @JsonIgnore
     private UserDto booker;
     private ItemDto item;
 }
