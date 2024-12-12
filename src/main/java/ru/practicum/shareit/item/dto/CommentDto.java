@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +15,6 @@ public class CommentDto {
     private Long id; // идентификатор комментария
     private String text; // Текст комментария
     private String authorName;
-    @JsonIgnore
     private Item item; // Вещь, к которой относится комментарий
     private UserDto author; // Автор комментария
     private LocalDateTime created; // Дата и время создания комментария
