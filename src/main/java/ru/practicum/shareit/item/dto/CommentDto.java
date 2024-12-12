@@ -18,7 +18,6 @@ public class CommentDto {
     private String authorName;
     @JsonIgnore
     private Item item; // Вещь, к которой относится комментарий
-    @JsonIgnore
     private UserDto author; // Автор комментария
     private LocalDateTime created; // Дата и время создания комментария
 }
