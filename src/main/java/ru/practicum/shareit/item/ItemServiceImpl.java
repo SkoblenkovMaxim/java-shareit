@@ -123,7 +123,10 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public void deleteItemsByOwnerId(Long ownerId) {
-        itemRepository.getItemsByOwner(userRepository.findById(ownerId).orElseThrow()).clear();
+        List<Item> items = itemRepository.getItemsByOwner(userRepository.findById(ownerId).orElseThrow());
+        for (Item item : items) {
+            itemRepository.deleteById(item.getId());
+        }
     }
 
     @Override

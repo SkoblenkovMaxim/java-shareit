@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.user.dao.UserRepository;
+
 import java.util.List;
 
 @Slf4j
@@ -17,12 +18,12 @@ public class BookingController {
 
     private static final String USER_ID = "X-Sharer-User-Id";
     private final BookingService service;
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Autowired
-    public BookingController(BookingService bookingService, UserService userService) {
+    public BookingController(BookingService bookingService, UserRepository userRepository) {
         this.service = bookingService;
-        this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @ResponseBody
@@ -66,7 +67,7 @@ public class BookingController {
     }
 
     private void existUser(@RequestHeader(USER_ID) Long userId) {
-        if (!userService.getUsers().contains(userService.getUserById(userId)) || userId == null) {
+        if (!userRepository.existsById(userId) || userId == null) {
             throw new NotFoundException("Пользователь не найден");
         }
     }

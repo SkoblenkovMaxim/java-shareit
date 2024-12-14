@@ -69,9 +69,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = repository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Бронирование с ID=" + bookingId + " не найдено!"));
 
-        if (booking.getEnd().isBefore(LocalDateTime.now())) {
-            throw new ValidationException("Время бронирования уже истекло!");
-        }
+        isGetEnd(bookingId);
 
         if (booking.getBooker().getId().equals(userId)) {
             if (!approved) {
@@ -137,20 +135,20 @@ public class BookingServiceImpl implements BookingService {
                 bookings = repository.findByBookerId(userId, sortByStartDesc);
                 break;
             case "CURRENT":
-                bookings = repository.findByBookerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(),
+                bookings = repository.findActiveBookings(userId, LocalDateTime.now(),
                         LocalDateTime.now(), sortByStartDesc);
                 break;
             case "PAST":
-                bookings = repository.findByBookerIdAndEndIsBefore(userId, LocalDateTime.now(), sortByStartDesc);
+                bookings = repository.findPastBookings(userId, LocalDateTime.now(), sortByStartDesc);
                 break;
             case "FUTURE":
-                bookings = repository.findByBookerIdAndStartIsAfter(userId, LocalDateTime.now(), sortByStartDesc);
+                bookings = repository.findFutureBookings(userId, LocalDateTime.now(), sortByStartDesc);
                 break;
             case "WAITING":
-                bookings = repository.findByBookerIdAndStatus(userId, Status.WAITING, sortByStartDesc);
+                bookings = repository.findByBookerAndStatus(userId, Status.WAITING, sortByStartDesc);
                 break;
             case "REJECTED":
-                bookings = repository.findByBookerIdAndStatus(userId, Status.REJECTED, sortByStartDesc);
+                bookings = repository.findByBookerAndStatus(userId, Status.REJECTED, sortByStartDesc);
                 break;
             default:
                 throw new ValidationException("Unknown state: " + state);
@@ -171,24 +169,24 @@ public class BookingServiceImpl implements BookingService {
         Sort sortByStartDesc = Sort.by(Sort.Direction.DESC, "start");
         switch (state) {
             case "ALL":
-                bookings = repository.findByItem_Owner_Id(userId, sortByStartDesc);
+                bookings = repository.findByOwner(userId, sortByStartDesc);
                 break;
             case "CURRENT":
-                bookings = repository.findByItem_Owner_IdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(),
+                bookings = repository.findOwnerActiveBookings(userId, LocalDateTime.now(),
                         LocalDateTime.now(), sortByStartDesc);
                 break;
             case "PAST":
-                bookings = repository.findByItem_Owner_IdAndEndIsBefore(userId, LocalDateTime.now(), sortByStartDesc);
+                bookings = repository.findOwnerPastBookings(userId, LocalDateTime.now(), sortByStartDesc);
                 break;
             case "FUTURE":
-                bookings = repository.findByItem_Owner_IdAndStartIsAfter(userId, LocalDateTime.now(),
+                bookings = repository.findOwnerFutureBookings(userId, LocalDateTime.now(),
                         sortByStartDesc);
                 break;
             case "WAITING":
-                bookings = repository.findByItem_Owner_IdAndStatus(userId, Status.WAITING, sortByStartDesc);
+                bookings = repository.findOwnerBookingsByStatus(userId, Status.WAITING, sortByStartDesc);
                 break;
             case "REJECTED":
-                bookings = repository.findByItem_Owner_IdAndStatus(userId, Status.REJECTED, sortByStartDesc);
+                bookings = repository.findOwnerBookingsByStatus(userId, Status.REJECTED, sortByStartDesc);
                 break;
             default:
                 throw new ValidationException("Unknown state: " + state);
@@ -201,21 +199,29 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingShortDto getLastBooking(Long itemId) {
 
-        return mapper.toBookingShortDto(repository.findFirstByItem_IdAndEndBeforeOrderByEndDesc(itemId,
+        return mapper.toBookingShortDto(repository.findLastBookingBeforeEnd(itemId,
                 LocalDateTime.now()));
     }
 
     @Override
     public BookingShortDto getNextBooking(Long itemId) {
 
-        return mapper.toBookingShortDto(repository.findFirstByItem_IdAndStartAfterOrderByStartAsc(itemId,
+        return mapper.toBookingShortDto(repository.findNextBookingAfterEnd(itemId,
                 LocalDateTime.now()));
     }
 
     @Override
     public Booking getBookingWithUserBookedItem(Long itemId, Long userId) {
 
-        return repository.findFirstByItem_IdAndBooker_IdAndEndIsBeforeAndStatus(itemId,
+        return repository.findLastBookingByUserAndStatus(itemId,
                 userId, LocalDateTime.now(), Status.APPROVED);
+    }
+
+    public void isGetEnd(Long bookingId) {
+        Booking booking = repository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Бронирование с ID=" + bookingId + " не найдено!"));
+        if (booking.getEnd().isBefore(LocalDateTime.now())) {
+            throw new ValidationException("Время бронирования уже истекло!");
+        }
     }
 }
