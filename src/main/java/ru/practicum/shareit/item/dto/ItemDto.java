@@ -5,6 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
+import ru.practicum.shareit.user.dto.UserDto;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,5 +23,9 @@ public class ItemDto {
     private String description; // описание
     @NotNull
     private Boolean available; // статус доступности
+    private UserDto owner;
     private Long requestId; // id запроса вещи
+    private BookingShortDto lastBooking;
+    private BookingShortDto nextBooking;
+    private List<CommentDto> comments;
 }
