@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-public class BookingShortDto {
+public class    BookingShortDto {
 
     private Long id;
     private LocalDateTime start;

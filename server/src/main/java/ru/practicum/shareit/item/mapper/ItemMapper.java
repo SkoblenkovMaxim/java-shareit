@@ -59,7 +59,7 @@ public class ItemMapper {
                 comment.getId(),
                 comment.getText(),
                 comment.getAuthor().getName(),
-                toItemDto(comment.getItem()),
+                null,
                 userMapper.toUserDto(comment.getAuthor()),
                 comment.getCreated());
     }

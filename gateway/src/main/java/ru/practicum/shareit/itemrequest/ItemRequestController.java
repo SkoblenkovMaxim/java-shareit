@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.itemrequest.dto.ItemRequestDto;
 
+import java.time.LocalDateTime;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping(path = "/requests")
@@ -15,6 +17,7 @@ public class ItemRequestController {
     public ResponseEntity<Object> createItemRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                     @RequestBody ItemRequestDto itemRequestDto) {
         itemRequestDto.setRequestorId(userId);
+        itemRequestDto.setCreated(LocalDateTime.now());
         return itemRequestClient.createItemRequest(itemRequestDto);
     }
 
@@ -24,8 +27,9 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ResponseEntity<Object> findByItemRequestId(@PathVariable Long requestId) {
-        return itemRequestClient.findByItemRequestId(requestId);
+    public ResponseEntity<Object> findByItemRequestId(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                      @PathVariable Long requestId) {
+        return itemRequestClient.findByItemRequestId(requestId, userId);
     }
 
 }

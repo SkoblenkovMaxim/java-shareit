@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookUpdateRequestDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
@@ -39,7 +40,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto create(BookingInputDto bookingInputDto, Long bookerId) {
+    public BookingDto bookItem(BookingInputDto bookingInputDto, Long bookerId) {
 
         if (bookingInputDto.getItemId() == null) {
             throw new NotFoundException("Вещь не найдена");
@@ -60,7 +61,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto update(Long bookingId, Long userId, Boolean approved) {
+    public BookingDto update(Long bookingId, Long userId, BookUpdateRequestDto bookUpdateRequestDto) {
 
         if (userService.getUserById(userId) == null) {
             throw new NotFoundException("Пользователь не найден");
@@ -72,7 +73,7 @@ public class BookingServiceImpl implements BookingService {
         isGetEnd(bookingId);
 
         if (booking.getBooker().getId().equals(userId)) {
-            if (!approved) {
+            if (!bookUpdateRequestDto.getApproved()) {
                 booking.setStatus(Status.CANCELED);
                 log.info("Пользователь с ID={} отменил бронирование с ID={}", userId, bookingId);
             } else {
@@ -84,7 +85,7 @@ public class BookingServiceImpl implements BookingService {
             if (!booking.getStatus().equals(Status.WAITING)) {
                 throw new ValidationException("Решение по бронированию уже принято!");
             }
-            if (approved) {
+            if (bookUpdateRequestDto.getApproved()) {
                 booking.setStatus(Status.APPROVED);
                 log.info("Пользователь с ID={} подтвердил бронирование с ID={}", userId, bookingId);
             } else {

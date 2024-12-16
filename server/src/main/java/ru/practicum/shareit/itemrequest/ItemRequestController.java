@@ -13,9 +13,7 @@ public class ItemRequestController {
     private final RequestService requestService;
 
     @PostMapping
-    public ItemRequestDto createItemRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                            @RequestBody ItemRequestDto itemRequestDto) {
-        itemRequestDto.setRequestorId(userId);
+    public ItemRequestDto createItemRequest(@RequestBody ItemRequestDto itemRequestDto) {
         return requestService.createItemRequest(itemRequestDto);
     }
 
@@ -25,8 +23,9 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestDto findByItemRequestId(@PathVariable Long requestId) {
-        return requestService.findByItemRequestId(requestId);
+    public ItemRequestDto findByItemRequestId(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                              @PathVariable Long requestId) {
+        return requestService.findByItemRequestId(requestId, userId);
     }
 
 }

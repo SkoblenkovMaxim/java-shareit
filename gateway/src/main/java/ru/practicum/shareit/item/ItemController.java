@@ -24,34 +24,11 @@ public class ItemController {
         return itemClient.addItem(userId, itemDto);
     }
 
-    //    @PatchMapping("/{itemId}")
-//    public ResponseEntity<Object> updateItem(
-//             @RequestBody ItemDto itemDto,
-//            @Valid @RequestHeader(owner) Long ownerId,
-//            @Valid @PathVariable Long itemId) {
-//        return itemClient.update(itemDto, ownerId, itemId);
-//    }
-//
-//    @GetMapping
-//    public ResponseEntity<Object> getItemsByOwner(@RequestHeader(owner) Long ownerId) {
-//        return itemClient.getItemsByOwner(ownerId);
-//    }
-//
-//    @DeleteMapping("/{itemId}")
-//    public void deleteItem(@RequestHeader(owner) Long ownerId, @PathVariable Long itemId) {
-//        itemClient.deleteItem(ownerId, itemId);
-//    }
-//
     @GetMapping("/{itemId}")
     public ResponseEntity<Object> getItemById(@Valid @PathVariable Long itemId) {
         return itemClient.getItemById(itemId);
     }
-    //
-//    @GetMapping("/search")
-//    public ResponseEntity<Object> getItemsBySearchQuery(@RequestParam String text) {
-//        return itemClient.getItemsBySearchQuery(text);
-//    }
-//
+
     @ResponseBody
     @PostMapping("/{itemId}/comment")
     public ResponseEntity<Object> addComment(@RequestHeader(owner) Long userId,

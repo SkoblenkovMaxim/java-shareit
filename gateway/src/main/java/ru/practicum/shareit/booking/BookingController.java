@@ -11,11 +11,10 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.booking.dto.BookItemRequestDto;
+import ru.practicum.shareit.booking.dto.BookUpdateRequestDto;
 import ru.practicum.shareit.booking.dto.BookingState;
 
-import java.util.List;
 import java.util.Map;
-
 
 @Controller
 @RequestMapping(path = "/bookings")
@@ -56,7 +55,9 @@ public class BookingController {
                                          @Valid @RequestHeader("X-Sharer-User-Id") long userId,
                                          @RequestParam Boolean approved) {
         log.info("Получен PATCH-запрос к эндпоинту: '/bookings' на обновление статуса бронирования с ID={}", bookingId);
-        return bookingClient.update(bookingId, userId, Map.of("approved", approved));
+        BookUpdateRequestDto bookUpdateRequestDto = new BookUpdateRequestDto();
+        bookUpdateRequestDto.setApproved(approved);
+        return bookingClient.update(bookingId, userId, bookUpdateRequestDto);
     }
 
     @GetMapping("/owner")
