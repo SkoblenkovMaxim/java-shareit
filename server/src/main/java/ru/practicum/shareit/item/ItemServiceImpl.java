@@ -70,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto update(ItemDto itemDto, Long ownerId, Long itemId) {
         if (!userRepository.existsById(ownerId)) {
-            throw new NotFoundException("Пользователь  id=" + ownerId + " не найден");
+            throw new NotFoundException("Пользователь с id=" + ownerId + " не найден");
         }
 
         itemDto.setId(itemId);
