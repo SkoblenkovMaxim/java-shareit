@@ -25,7 +25,7 @@ class UserServiceImplTest {
     void createUser() {
         UserDto userDto = new UserDto();
         userDto.setName("newName");
-        userDto.setEmail("a@a.com");
+        userDto.setEmail("ab@ab.com");
         UserDto user = userService.createUser(userDto);
         assertEquals("newName", user.getName());
     }

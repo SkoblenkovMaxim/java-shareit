@@ -49,14 +49,14 @@ public class BookingServiceImplTest {
 
         Booking booking = new Booking();
         booking.setStart(LocalDateTime.parse("2015-08-04T10:11:30"));
-        booking.setEnd(LocalDateTime.parse("2015-08-04T10:11:30"));
+        booking.setEnd(LocalDateTime.parse("2015-08-05T10:11:30"));
         booking.setItem(savedItem);
         booking.setBooker(savedUserBooker);
         booking.setStatus(Status.WAITING);
 
         Booking savedBooking = bookingRepository.save(booking);
 
-        BookingShortDto dto = bookingService.getLastBooking(savedBooking.getId());
+        BookingShortDto dto = bookingService.getLastBooking(savedItem.getId());
         assertNotNull(dto);
     }
 }
