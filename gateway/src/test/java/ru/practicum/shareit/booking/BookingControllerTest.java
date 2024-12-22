@@ -9,20 +9,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+
 import ru.practicum.shareit.booking.dto.BookItemRequestDto;
 import ru.practicum.shareit.booking.dto.BookUpdateRequestDto;
 import ru.practicum.shareit.booking.dto.BookingState;
-import ru.practicum.shareit.item.ItemDto;
-import ru.practicum.shareit.user.dto.UserDto;
-
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BookingController.class)
@@ -41,162 +35,60 @@ public class BookingControllerTest {
 
     @Test
     void getBookings() throws Exception {
+        when(bookingClient.getBookings(1, BookingState.ALL, 0, 10))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-        UserDto userDto = new UserDto();
-        userDto.setId(1L);
-        userDto.setName("Name");
-        userDto.setEmail("email@email.com");
-
-        ItemDto itemDto = new ItemDto();
-        itemDto.setId(1L);
-        itemDto.setName("Name");
-        itemDto.setDescription("Description");
-        itemDto.setAvailable(true);
-        itemDto.setOwner(userDto);
-        itemDto.setLastBooking(null);
-        itemDto.setNextBooking(null);
-        itemDto.setComments(null);
-
-        BookItemRequestDto requestDto = new BookItemRequestDto();
-        requestDto.setItemId(itemDto.getId());
-        requestDto.setStart(LocalDateTime.now());
-        requestDto.setEnd(LocalDateTime.now().plusDays(1));
-
-        when(bookingClient.getBookings(userDto.getId(), BookingState.ALL, 10, 10)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-        mockMvc.perform(post("/bookings")
+        mockMvc.perform(get("/bookings")
                 .header(USER_ID, 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(requestDto))
-        ).andDo(print()).andExpect(status().isOk());
+        ).andExpect(status().isOk());
     }
 
     @Test
     void bookItem() throws Exception {
-
-        UserDto userDto = new UserDto();
-        userDto.setId(1L);
-        userDto.setName("Name");
-        userDto.setEmail("email@email.com");
-
-        ItemDto itemDto = new ItemDto();
-        itemDto.setId(1L);
-        itemDto.setName("Name");
-        itemDto.setDescription("Description");
-        itemDto.setAvailable(true);
-        itemDto.setOwner(userDto);
-        itemDto.setLastBooking(null);
-        itemDto.setNextBooking(null);
-        itemDto.setComments(null);
-
-        BookItemRequestDto requestDto = new BookItemRequestDto();
-        requestDto.setItemId(itemDto.getId());
-        requestDto.setStart(LocalDateTime.now());
-        requestDto.setEnd(LocalDateTime.now().plusDays(1));
-
-        when(bookingClient.bookItem(userDto.getId(), requestDto)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        when(bookingClient.bookItem(1, new BookItemRequestDto()))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         mockMvc.perform(post("/bookings")
                 .header(USER_ID, 1)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(requestDto))
-        ).andDo(print()).andExpect(status().isOk());
+                .content(mapper.writeValueAsString(new BookItemRequestDto()))
+        ).andExpect(status().isOk());
     }
 
     @Test
     void getBooking() throws Exception {
+        when(bookingClient.getBooking(1, 1L))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-        UserDto userDto = new UserDto();
-        userDto.setId(1L);
-        userDto.setName("Name");
-        userDto.setEmail("email@email.com");
-
-        ItemDto itemDto = new ItemDto();
-        itemDto.setId(1L);
-        itemDto.setName("Name");
-        itemDto.setDescription("Description");
-        itemDto.setAvailable(true);
-        itemDto.setOwner(userDto);
-        itemDto.setLastBooking(null);
-        itemDto.setNextBooking(null);
-        itemDto.setComments(null);
-
-        BookItemRequestDto requestDto = new BookItemRequestDto();
-        requestDto.setItemId(itemDto.getId());
-        requestDto.setStart(LocalDateTime.now());
-        requestDto.setEnd(LocalDateTime.now().plusDays(1));
-
-        when(bookingClient.getBooking(userDto.getId(), requestDto.getItemId())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
         mockMvc.perform(get("/bookings/1")
                 .header(USER_ID, 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(requestDto))
-        ).andDo(print()).andExpect(status().isOk());
+        ).andExpect(status().isOk());
     }
 
     @Test
     void update() throws Exception {
-
-        UserDto userDto = new UserDto();
-        userDto.setId(1L);
-        userDto.setName("Name");
-        userDto.setEmail("email@email.com");
-
-        ItemDto itemDto = new ItemDto();
-        itemDto.setId(1L);
-        itemDto.setName("Name");
-        itemDto.setDescription("Description");
-        itemDto.setAvailable(true);
-        itemDto.setOwner(userDto);
-        itemDto.setLastBooking(null);
-        itemDto.setNextBooking(null);
-        itemDto.setComments(null);
-
-        BookItemRequestDto requestDto = new BookItemRequestDto();
-        requestDto.setItemId(itemDto.getId());
-        requestDto.setStart(LocalDateTime.now());
-        requestDto.setEnd(LocalDateTime.now().plusDays(1));
-
         BookUpdateRequestDto updateRequestDto = new BookUpdateRequestDto();
         updateRequestDto.setApproved(true);
 
-        when(bookingClient.update(requestDto.getItemId(), userDto.getId(), updateRequestDto)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-        mockMvc.perform(post("/bookings/1")
+        when(bookingClient.update(1, 1, updateRequestDto))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+
+        mockMvc.perform(patch("/bookings/1")
                 .header(USER_ID, 1)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(requestDto))
-        ).andDo(print()).andExpect(status().isOk());
+                .param("approved", "true")
+        ).andExpect(status().isOk());
     }
 
     @Test
     void getBookingsOwner() throws Exception {
+        when(bookingClient.getBookingsOwner(
+                1,
+                Map.of("state", BookingState.ALL)
+        )).thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-        UserDto userDto = new UserDto();
-        userDto.setId(1L);
-        userDto.setName("Name");
-        userDto.setEmail("email@email.com");
-
-        ItemDto itemDto = new ItemDto();
-        itemDto.setId(1L);
-        itemDto.setName("Name");
-        itemDto.setDescription("Description");
-        itemDto.setAvailable(true);
-        itemDto.setOwner(userDto);
-        itemDto.setLastBooking(null);
-        itemDto.setNextBooking(null);
-        itemDto.setComments(null);
-
-        BookItemRequestDto requestDto = new BookItemRequestDto();
-        requestDto.setItemId(itemDto.getId());
-        requestDto.setStart(LocalDateTime.now());
-        requestDto.setEnd(LocalDateTime.now().plusDays(1));
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("state", BookingState.ALL);
-
-        when(bookingClient.getBookingsOwner(userDto.getId(), parameters)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-        mockMvc.perform(get("/bookings/1")
+        mockMvc.perform(get("/bookings/owner")
                 .header(USER_ID, 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(requestDto))
-        ).andDo(print()).andExpect(status().isOk());
+                .param("state", "ALL")
+        ).andExpect(status().isOk());
     }
 }
