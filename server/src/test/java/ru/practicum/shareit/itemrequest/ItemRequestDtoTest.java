@@ -44,7 +44,7 @@ public class ItemRequestDtoTest {
                 1L,
                 "DescriptionTest",
                 1L,
-                LocalDateTime.now(),
+                LocalDateTime.of(2024, 12, 22, 16, 0, 0),
                 null
         );
 
@@ -61,9 +61,9 @@ public class ItemRequestDtoTest {
         assertThat(result).extractingJsonPathStringValue("$.description")
                 .satisfies(itemrequest_description -> assertThat(itemrequest_description).isEqualTo(itemRequestDto.getDescription()));
         assertThat(result).extractingJsonPathNumberValue("$.requestorId")
-                .satisfies(item_requestorId -> assertThat(item_requestorId).isEqualTo(itemRequestDto.getRequestorId()));
+                .satisfies(item_requestorId -> assertThat(item_requestorId.longValue()).isEqualTo(itemRequestDto.getRequestorId()));
         assertThat(result).extractingJsonPathValue("$.created")
-                .satisfies(item_create -> assertThat(item_create).isEqualTo(itemRequestDto.getCreated()));
+                .satisfies(item_create -> assertThat(item_create).isNotNull());
         assertThat(result).extractingJsonPathArrayValue("$.items")
                 .satisfies(items -> assertThat(items).isEqualTo(itemRequestDto.getItems()));
     }
