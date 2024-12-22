@@ -12,7 +12,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
@@ -32,10 +31,8 @@ class UserControllerTest {
         when(userClient.createUser(dto)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
         this.mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {"id": null, "name": "name", "email": "a@a.com"}
-                        """)
-        ).andDo(print()).andExpect(status().isOk());
+                .content("{\"id\": null, \"name\": \"name\", \"email\": \"a@a.com\"} ")
+        ).andExpect(status().isOk());
     }
 
     @Test
@@ -46,20 +43,18 @@ class UserControllerTest {
         when(userClient.updateUser(0L, dto)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
         this.mockMvc.perform(patch("/users/0")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {"id": null, "name": "name", "email": "email"}
-                        """)
-        ).andDo(print()).andExpect(status().isOk());
+                .content("{\"id\": null, \"name\": \"name\", \"email\": \"email\"}")
+        ).andExpect(status().isOk());
     }
 
     @Test
     void getUserById() throws Exception {
         when(userClient.getUserById(0L)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-        this.mockMvc.perform(get("/users/0")).andDo(print()).andExpect(status().isOk());
+        this.mockMvc.perform(get("/users/0")).andExpect(status().isOk());
     }
 
     @Test
     void removeUser() throws Exception {
-        this.mockMvc.perform(delete("/users/0")).andDo(print()).andExpect(status().isOk());
+        this.mockMvc.perform(delete("/users/0")).andExpect(status().isOk());
     }
 }

@@ -9,13 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.user.dto.UserDto;
-
-import java.time.LocalDateTime;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ItemController.class)
@@ -34,77 +31,38 @@ public class ItemControllerTest {
 
     @Test
     void addItem() throws Exception {
-        UserDto userDto = new UserDto();
-        userDto.setName("Name");
-        userDto.setEmail("email@email.com");
-
         ItemDto itemDto = new ItemDto();
         itemDto.setName("Name");
         itemDto.setDescription("Description");
         itemDto.setAvailable(true);
-        itemDto.setOwner(userDto);
-        itemDto.setLastBooking(null);
-        itemDto.setNextBooking(null);
-        itemDto.setComments(null);
 
-        when(itemClient.addItem(userDto.getId(), itemDto)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-        mockMvc.perform(post("/items")
-                .header(USER_ID, 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(itemDto))
-        ).andDo(print()).andExpect(status().isOk());
-    }
+        when(itemClient.addItem(1L, itemDto))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-    @Test
-    void getItemById() throws Exception {
-        UserDto userDto = new UserDto();
-        userDto.setName("Name");
-        userDto.setEmail("email@email.com");
-
-        ItemDto itemDto = new ItemDto();
-        itemDto.setName("Name");
-        itemDto.setDescription("Description");
-        itemDto.setAvailable(true);
-        itemDto.setOwner(userDto);
-        itemDto.setLastBooking(null);
-        itemDto.setNextBooking(null);
-        itemDto.setComments(null);
-
-        when(itemClient.getItemById(itemDto.getId())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
         mockMvc.perform(post("/items")
                 .header(USER_ID, 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(itemDto))
-        ).andDo(print()).andExpect(status().isOk());
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    void getItemById() throws Exception {
+        when(itemClient.getItemById(1L))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+
+        mockMvc.perform(get("/items/1")
+        ).andExpect(status().isOk());
     }
 
     @Test
     void addComment() throws Exception {
-        UserDto userDto = new UserDto();
-        userDto.setName("Name");
-        userDto.setEmail("email@email.com");
+        when(itemClient.addComment(1L, 1L, new CommentDto())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-        ItemDto itemDto = new ItemDto();
-        itemDto.setName("Name");
-        itemDto.setDescription("Description");
-        itemDto.setAvailable(true);
-        itemDto.setOwner(userDto);
-        itemDto.setLastBooking(null);
-        itemDto.setNextBooking(null);
-        itemDto.setComments(null);
-
-        CommentDto commentDto = new CommentDto();
-        commentDto.setText("Text");
-        commentDto.setAuthorName(userDto.getName());
-        commentDto.setItem(itemDto);
-        commentDto.setAuthor(userDto);
-        commentDto.setCreated(LocalDateTime.of(2024, 12, 20, 0, 0, 0));
-
-        when(itemClient.addComment(userDto.getId(), itemDto.getId(), commentDto)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
         mockMvc.perform(post("/items/1/comment")
                 .header(USER_ID, 1)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(commentDto))
-        ).andDo(print()).andExpect(status().isOk());
+                .content(mapper.writeValueAsString(new CommentDto()))
+        ).andExpect(status().isOk());
     }
 }

@@ -15,7 +15,7 @@ public class ItemController {
     private final ItemService itemService;
     private final UserService userService;
 
-    private static final String owner = "X-Sharer-User-Id";
+    private static final String OWNER_HEADER = "X-Sharer-User-Id";
 
     public ItemController(ItemService itemService, UserService userService) {
         this.itemService = itemService;
@@ -23,7 +23,7 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto addItem(@RequestBody ItemDto itemDto, @RequestHeader(owner) Long id) {
+    public ItemDto addItem(@RequestBody ItemDto itemDto, @RequestHeader(OWNER_HEADER) Long id) {
         log.info("Получен запрос на добавление вещи пользователем с ownerId: {}", id);
         return itemService.add(itemDto, id);
     }
@@ -31,18 +31,18 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(
             @RequestBody ItemDto itemDto,
-            @RequestHeader(owner) Long ownerId,
+            @RequestHeader(OWNER_HEADER) Long ownerId,
             @PathVariable Long itemId) {
         return itemService.update(itemDto, ownerId, itemId);
     }
 
     @GetMapping
-    public List<ItemDto> getItemsByOwner(@RequestHeader(owner) Long ownerId) {
+    public List<ItemDto> getItemsByOwner(@RequestHeader(OWNER_HEADER) Long ownerId) {
         return itemService.getItemsByOwner(ownerId);
     }
 
     @DeleteMapping("/{itemId}")
-    public void deleteItem(@RequestHeader(owner) Long ownerId, @PathVariable Long itemId) {
+    public void deleteItem(@RequestHeader(OWNER_HEADER) Long ownerId, @PathVariable Long itemId) {
         itemService.deleteItem(ownerId, itemId);
     }
 
@@ -58,7 +58,7 @@ public class ItemController {
 
     @ResponseBody
     @PostMapping("/{itemId}/comment")
-    public CommentDto addComment(@RequestBody CommentDto commentDto, @RequestHeader(owner) Long userId,
+    public CommentDto addComment(@RequestBody CommentDto commentDto, @RequestHeader(OWNER_HEADER) Long userId,
                                  @PathVariable Long itemId) {
         log.info("Получен запрос на добавление отзыва пользователем ");
         return itemService.addComment(commentDto, itemId, userId);
