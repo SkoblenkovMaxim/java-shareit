@@ -18,11 +18,11 @@ public class ItemDtoTest {
 
     @Test
     void testItemSerialize() throws Exception {
-        UserDto userDto = new UserDto(
-                1L,
-                "TestName",
-                "test@email.ru"
-        );
+
+        UserDto userDto = new UserDto();
+        userDto.setId(1L);
+        userDto.setName("TestName");
+        userDto.setEmail("test@email.ru");
 
         ItemDto itemDto = new ItemDto(
                 1L,
@@ -41,7 +41,12 @@ public class ItemDtoTest {
         assertThat(result).hasJsonPath("$.id")
                 .hasJsonPath("$.description")
                 .hasJsonPath("$.available")
-                .hasJsonPath("$.name");
+                .hasJsonPath("$.name")
+                .hasJsonPath("$.owner")
+                .hasJsonPath("$.requestId")
+                .hasJsonPath("$.lastBooking")
+                .hasJsonPath("$.nextBooking")
+                .hasJsonPath("$.comments");
 
         assertThat(result).extractingJsonPathNumberValue("$.id")
                 .satisfies(id -> assertThat(id.longValue()).isEqualTo(itemDto.getId()));
@@ -51,5 +56,15 @@ public class ItemDtoTest {
                 .satisfies(item_description -> assertThat(item_description).isEqualTo(itemDto.getDescription()));
         assertThat(result).extractingJsonPathBooleanValue("$.available")
                 .satisfies(item_available -> assertThat(item_available).isEqualTo(itemDto.getAvailable()));
+        assertThat(result).extractingJsonPathValue("$.owner")
+                .satisfies(item_userDto -> assertThat(item_userDto).isNotNull());
+        assertThat(result).extractingJsonPathNumberValue("$.requestId")
+                .satisfies(requestId -> assertThat(requestId.longValue()).isEqualTo(itemDto.getRequestId()));
+        assertThat(result).extractingJsonPathValue("$.lastBooking")
+                .satisfies(lastBooking -> assertThat(lastBooking).isEqualTo(itemDto.getLastBooking()));
+        assertThat(result).extractingJsonPathValue("$.nextBooking")
+                .satisfies(nextBooking -> assertThat(nextBooking).isEqualTo(itemDto.getNextBooking()));
+        assertThat(result).extractingJsonPathValue("$.comments")
+                .satisfies(comments -> assertThat(comments).isEqualTo(itemDto.getComments()));
     }
 }
