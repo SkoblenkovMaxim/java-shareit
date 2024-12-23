@@ -24,6 +24,7 @@ public class UserDtoTest {
                 "test@email.ru"
         );
 
+
         JsonContent<UserDto> result = json.write(userDto);
 
         assertThat(result).hasJsonPath("$.id")

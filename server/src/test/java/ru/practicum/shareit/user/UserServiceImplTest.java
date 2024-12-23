@@ -3,6 +3,7 @@ package ru.practicum.shareit.user;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.practicum.shareit.exception.UserAlreadyExistsException;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -26,12 +27,29 @@ class UserServiceImplTest {
 
     @Test
     void createUser() {
-        User user = new User();
-        user.setName("newName");
-        user.setEmail("ab@ab.com");
-        User savedUser = userRepository.save(user);
+        UserDto userDto = new UserDto();
+        userDto.setName("newName");
+        userDto.setEmail("a@a.com");
 
-        assertEquals("newName", savedUser.getName());
+        UserDto dto = userService.createUser(userDto);
+
+        assertNotNull(dto);
+    }
+
+    @Test
+    void createUserValidEmail() {
+        UserDto userDto = new UserDto();
+        userDto.setName("newName");
+        userDto.setEmail("a1@a1.com");
+        UserDto dto = userService.createUser(userDto);
+
+        UserDto userDtoNew = new UserDto();
+        userDtoNew.setName("newNameUser");
+        userDtoNew.setEmail("a1@a1.com");
+
+        UserAlreadyExistsException exp = assertThrows(UserAlreadyExistsException.class, () -> userService.createUser(userDtoNew));
+
+        assertEquals("email=a1@a1.com уже используется", exp.getMessage());
     }
 
     @Test

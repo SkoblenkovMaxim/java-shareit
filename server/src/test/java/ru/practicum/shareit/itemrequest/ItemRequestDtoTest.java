@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
+import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.itemrequest.dto.ItemRequestDto;
+import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
@@ -18,6 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ItemRequestDtoTest {
     private final JacksonTester<ItemRequestDto> json;
+    private RequestRepository requestRepository;
+    private UserRepository userRepository;
+    private ItemRepository itemRepository;
 
     @Test
     void testItemRequestSerialize() throws Exception {
@@ -27,6 +32,7 @@ public class ItemRequestDtoTest {
                 "TestName",
                 "test@email.ru"
         );
+
 
         ItemDto itemDto = new ItemDto(
                 1L,

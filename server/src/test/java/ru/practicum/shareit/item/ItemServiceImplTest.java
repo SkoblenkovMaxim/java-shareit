@@ -4,12 +4,19 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.Status;
+import ru.practicum.shareit.item.dao.CommentRepository;
 import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +30,12 @@ public class ItemServiceImplTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
+
+    @Autowired
+    private BookingRepository bookingRepository;
 
     @Autowired
     private ItemServiceImpl itemService;
@@ -50,7 +63,7 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    void create() {
+    void add() {
         User user = new User();
         user.setName("name");
         user.setEmail("abc@abc.com");
@@ -119,4 +132,121 @@ public class ItemServiceImplTest {
         assertFalse(result.isEmpty());
         assertEquals(1, result.size());
     }
+
+    @Test
+    void getItemsByOwner() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("a@a.com");
+        User savedUser = userRepository.save(user);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setOwner(savedUser);
+        itemRepository.save(item);
+
+        List<ItemDto> result = itemService.getItemsByOwner(savedUser.getId());
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void getItemsBySearchQuery() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("a@a.com");
+        User savedUser = userRepository.save(user);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setOwner(savedUser);
+        itemRepository.save(item);
+
+        List<ItemDto> result = itemService.getItemsBySearchQuery("name");
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void deleteItemsByOwnerId() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("ab@ab.com");
+        User savedUser = userRepository.save(user);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setOwner(savedUser);
+        itemRepository.save(item);
+
+        itemService.deleteItemsByOwnerId(savedUser.getId());
+
+        List<Item> items = itemRepository
+                .findAll()
+                .stream()
+                .filter(i -> i.getOwner().getEmail().equals("ab@ab.com"))
+                .toList();
+
+        assertTrue(items.isEmpty());
+    }
+
+    @Test
+    void getItemById() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("abcd@abcd.com");
+        User savedUser = userRepository.save(user);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setOwner(savedUser);
+        itemRepository.save(item);
+
+        ItemDto result = itemService.getItemById(item.getId());
+        assertNotNull(result);
+    }
+
+    @Test
+    void addComment() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("abcde@abcde.com");
+        User savedUser = userRepository.save(user);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setOwner(savedUser);
+        Item savedItem = itemRepository.save(item);
+
+        Booking booking = new Booking();
+        booking.setStart(LocalDateTime.now());
+        booking.setEnd(LocalDateTime.now().plusDays(2));
+        booking.setStatus(Status.CANCELED);
+        booking.setBooker(savedUser);
+        booking.setItem(savedItem);
+        bookingRepository.save(booking);
+
+        Comment comment = new Comment();
+        comment.setText("Test");
+        comment.setItem(item);
+        comment.setAuthor(user);
+        comment.setCreated(LocalDateTime.of(2024, 12, 23, 10, 0));
+        Comment savedComment = commentRepository.save(comment);
+
+        assertNotNull(savedComment);
+        assertEquals("Test", savedComment.getText());
+    }
+
+
 }

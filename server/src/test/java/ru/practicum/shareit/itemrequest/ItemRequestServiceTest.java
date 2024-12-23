@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 public class ItemRequestServiceTest {
@@ -63,9 +64,32 @@ public class ItemRequestServiceTest {
         assertFalse(result.isEmpty());
     }
 
-//    @Test
-//    void findByItemRequestId() {
-//        ItemRequestDto newItemRequestDto = requestService.findByItemRequestId(itemRequest.getItemRequestId(), userDto.getId());
-//        Assertions.assertNotNull(newItemRequestDto);
-//    }
+    @Test
+    void findByItemRequestId() {
+        User user = User.builder()
+                .name("Name")
+                .email("a@a.com")
+                .build();
+        User savedUser = userRepository.save(user);
+
+        ItemRequest itemRequest = ItemRequest.builder()
+                .description("desc")
+                .requestorId(user.getId())
+                .created(LocalDateTime.now())
+                .build();
+        ItemRequest savedItemRequest = itemRequestRepository.save(itemRequest);
+
+        Item item = Item.builder()
+                .name("name")
+                .description("desc")
+                .available(Boolean.TRUE)
+                .owner(user)
+                .requestId(savedItemRequest.getItemRequestId())
+                .build();
+        itemRepository.save(item);
+
+        ItemRequestDto result = requestService
+                .findByItemRequestId(savedItemRequest.getItemRequestId(), savedUser.getId());
+        assertNotNull(result);
+    }
 }
