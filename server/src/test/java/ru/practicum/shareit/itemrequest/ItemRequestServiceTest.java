@@ -1,13 +1,11 @@
 package ru.practicum.shareit.itemrequest;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.practicum.shareit.item.ItemService;
+import ru.practicum.shareit.item.dao.ItemRepository;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.itemrequest.dto.ItemRequestDto;
-import ru.practicum.shareit.itemrequest.mapper.ItemRequestMapper;
 import ru.practicum.shareit.itemrequest.model.ItemRequest;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
@@ -15,53 +13,59 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @SpringBootTest
 public class ItemRequestServiceTest {
     @Autowired
     private RequestService requestService;
     @Autowired
-    private RequestRepository requestRepository;
-    @Autowired
     private UserRepository userRepository;
     @Autowired
-    private ItemRequestMapper itemRequestMapper;
+    private RequestRepository itemRequestRepository;
     @Autowired
-    private ItemService itemService;
+    private ItemRepository itemRepository;
 
-    @BeforeEach
-    void setUp() {
-        userRepository = mock(UserRepository.class);
-        requestRepository = mock(RequestRepository.class);
-        requestService = new RequestServiceImpl(
-                requestRepository,
-                itemRequestMapper,
-                itemService
-        );
+    @Test
+    void createItemRequest() {
+        ItemRequestDto dto = new ItemRequestDto();
+        dto.setDescription("desc");
+        dto.setRequestorId(1L);
+        dto.setCreated(LocalDateTime.now());
+        requestService.createItemRequest(dto);
     }
 
     @Test
     void getUserRequests() {
         User user = User.builder()
-                .id(1L)
                 .name("Name")
-                .email("abc@abc.com")
+                .email("a@a.com")
                 .build();
-
-        when(userRepository.save(any())).thenReturn(user);
+        User savedUser = userRepository.save(user);
 
         ItemRequest itemRequest = ItemRequest.builder()
-                .itemRequestId(1L)
-                .description("Text")
+                .description("desc")
                 .requestorId(user.getId())
                 .created(LocalDateTime.now())
                 .build();
+        ItemRequest savedItemRequest = itemRequestRepository.save(itemRequest);
 
-        ItemRequestDto itemRequestDto = itemRequestMapper.toItemRequestDto(itemRequest, null);
-        List<ItemRequestDto> result = requestService.getUserRequests(user.getId());
-        Assertions.assertNotNull(result);
+        Item item = Item.builder()
+                .name("name")
+                .description("desc")
+                .available(Boolean.TRUE)
+                .owner(user)
+                .requestId(savedItemRequest.getItemRequestId())
+                .build();
+        itemRepository.save(item);
+
+        List<ItemRequestDto> result = requestService.getUserRequests(savedUser.getId());
+        assertFalse(result.isEmpty());
     }
+
+//    @Test
+//    void findByItemRequestId() {
+//        ItemRequestDto newItemRequestDto = requestService.findByItemRequestId(itemRequest.getItemRequestId(), userDto.getId());
+//        Assertions.assertNotNull(newItemRequestDto);
+//    }
 }

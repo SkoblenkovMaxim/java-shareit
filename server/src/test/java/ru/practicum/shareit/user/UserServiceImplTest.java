@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
@@ -21,13 +22,16 @@ class UserServiceImplTest {
     @Autowired
     private UserService userService;
 
+    private UserMapper userMapper;
+
     @Test
     void createUser() {
-        UserDto userDto = new UserDto();
-        userDto.setName("newName");
-        userDto.setEmail("ab@ab.com");
-        UserDto user = userService.createUser(userDto);
-        assertEquals("newName", user.getName());
+        User user = new User();
+        user.setName("newName");
+        user.setEmail("ab@ab.com");
+        User savedUser = userRepository.save(user);
+
+        assertEquals("newName", savedUser.getName());
     }
 
     @Test

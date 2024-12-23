@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,9 +9,9 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserRepository;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,25 +28,46 @@ public class ItemServiceImplTest {
     private ItemServiceImpl itemService;
 
     @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
     private ItemMapper itemMapper;
+
+    @Test
+    void deleteItem() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("ab@ab.com");
+        User savedUser = userRepository.save(user);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setOwner(savedUser);
+        Item savedItem = itemRepository.save(item);
+
+        itemService.deleteItem(savedItem.getId(), savedUser.getId());
+
+        Assertions.assertEquals(Optional.empty(), itemRepository.findById(item.getId()));
+    }
 
     @Test
     void create() {
         User user = new User();
         user.setName("name");
-        user.setEmail("a@a.com");
+        user.setEmail("abc@abc.com");
         User savedUser = userRepository.save(user);
 
-        ItemDto itemDto = new ItemDto();
-        itemDto.setName("name");
-        itemDto.setDescription("desc");
-        itemDto.setAvailable(true);
-        itemDto.setOwner(userMapper.toUserDto(savedUser));
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setOwner(savedUser);
+        Item savedItem = itemRepository.save(item);
+
+        ItemDto itemDto = itemMapper.toItemDto(savedItem);
 
         itemService.add(itemDto, savedUser.getId());
+
+        Assertions.assertEquals(1, itemRepository.count());
     }
 
     @Test
@@ -72,6 +94,9 @@ public class ItemServiceImplTest {
                 savedUser.getId(),
                 savedItem.getId()
         );
+
+        Assertions.assertEquals("newName", itemDto.getName());
+        Assertions.assertEquals("newDesc", itemDto.getDescription());
     }
 
     @Test

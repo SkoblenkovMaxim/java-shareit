@@ -93,7 +93,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItemsByOwner(Long ownerId) {
-        return itemRepository.getItemsByOwner(userRepository.findById(ownerId).orElseThrow())
+        return itemRepository.getItemsByOwner(userRepository.findById(ownerId)
+                        .orElseThrow(() -> new NotFoundException("Пользователь не найден")))
                 .stream()
                 .map(itemMapper::toItemDto)
                 .collect(toList());
