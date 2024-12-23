@@ -29,7 +29,7 @@ class UserServiceImplTest {
     void createUser() {
         UserDto userDto = new UserDto();
         userDto.setName("newName");
-        userDto.setEmail("a@a.com");
+        userDto.setEmail("a2@a2.com");
 
         UserDto dto = userService.createUser(userDto);
 

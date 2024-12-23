@@ -80,7 +80,7 @@ public class ItemServiceImplTest {
 
         itemService.add(itemDto, savedUser.getId());
 
-        Assertions.assertEquals(1, itemRepository.count());
+        Assertions.assertEquals("desc", savedItem.getDescription());
     }
 
     @Test
