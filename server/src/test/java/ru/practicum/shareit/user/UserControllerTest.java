@@ -53,12 +53,10 @@ public class UserControllerTest {
                 .name("Test")
                 .email("Test@test.com")
                 .build();
-
-//        userDto = userMapper.toUserDto(user);
     }
 
     @Test
-    void createUser () throws Exception {
+    void createUser() throws Exception {
         when(userService.createUser(any())).thenReturn(userDto);
         mvc.perform(post("/users")
                         .header("X-Sharer-User-Id", "1")
