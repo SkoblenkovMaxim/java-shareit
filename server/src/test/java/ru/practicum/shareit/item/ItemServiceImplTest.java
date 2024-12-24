@@ -7,13 +7,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.Status;
+import ru.practicum.shareit.exception.CustomUserNotFoundException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dao.CommentRepository;
 import ru.practicum.shareit.item.dao.ItemRepository;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserRepository;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -43,6 +47,9 @@ public class ItemServiceImplTest {
     @Autowired
     private ItemMapper itemMapper;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @Test
     void deleteItem() {
         User user = new User();
@@ -60,6 +67,44 @@ public class ItemServiceImplTest {
         itemService.deleteItem(savedItem.getId(), savedUser.getId());
 
         Assertions.assertEquals(Optional.empty(), itemRepository.findById(item.getId()));
+    }
+
+    @Test
+    void deleteItemNotFound() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("ab@ab.com");
+        User savedUser = userRepository.save(user);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setOwner(savedUser);
+        Item savedItem = itemRepository.save(item);
+
+        NotFoundException exp = assertThrows(NotFoundException.class, () -> itemService.deleteItem(999L, savedUser.getId()));
+
+        assertEquals("Вещь с id 999 не найдена", exp.getMessage());
+    }
+
+    @Test
+    void deleteItemNotFoundUser() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("ab@ab.com");
+        User savedUser = userRepository.save(user);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setOwner(savedUser);
+        Item savedItem = itemRepository.save(item);
+
+        NotFoundException exp = assertThrows(NotFoundException.class, () -> itemService.deleteItem(savedItem.getId(), 777L));
+
+        assertEquals("Пользователь с id 777 не найден", exp.getMessage());
     }
 
     @Test
@@ -110,6 +155,35 @@ public class ItemServiceImplTest {
 
         Assertions.assertEquals("newName", itemDto.getName());
         Assertions.assertEquals("newDesc", itemDto.getDescription());
+    }
+
+    @Test
+    void updateNotFoundUser() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("a@a.com");
+        User savedUser = userRepository.save(user);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setOwner(user);
+        Item savedItem = itemRepository.save(item);
+
+        ItemDto itemDto = new ItemDto();
+        itemDto.setName("newName");
+        itemDto.setDescription("newDesc");
+        itemDto.setAvailable(false);
+
+        NotFoundException exp = assertThrows(NotFoundException.class, () -> itemService.update(
+                itemMapper.toItemDto(item),
+                999L,
+                savedItem.getId()
+        )
+        );
+
+        assertEquals("Пользователь с id=999 не найден", exp.getMessage());
     }
 
     @Test
@@ -176,7 +250,7 @@ public class ItemServiceImplTest {
     void deleteItemsByOwnerId() {
         User user = new User();
         user.setName("name");
-        user.setEmail("ab@ab.com");
+        user.setEmail("ab1@ab1.com");
         User savedUser = userRepository.save(user);
 
         Item item = new Item();
@@ -191,7 +265,7 @@ public class ItemServiceImplTest {
         List<Item> items = itemRepository
                 .findAll()
                 .stream()
-                .filter(i -> i.getOwner().getEmail().equals("ab@ab.com"))
+                .filter(i -> i.getOwner().getEmail().equals("ab1@ab1.com"))
                 .toList();
 
         assertTrue(items.isEmpty());
@@ -219,6 +293,36 @@ public class ItemServiceImplTest {
     void addComment() {
         User user = new User();
         user.setName("name");
+        user.setEmail("ab@ab.com");
+        User savedUser = userRepository.save(user);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setOwner(savedUser);
+        Item savedItem = itemRepository.save(item);
+
+        Booking booking = new Booking();
+        booking.setStart(LocalDateTime.parse("2023-12-03T10:15:30"));
+        booking.setEnd(LocalDateTime.parse("2024-12-03T10:15:30"));
+        booking.setItem(item);
+        booking.setBooker(user);
+        booking.setStatus(Status.APPROVED);
+        bookingRepository.save(booking);
+
+        CommentDto dto = new CommentDto();
+        dto.setText("text");
+        dto.setItem(itemMapper.toItemDto(item));
+        dto.setAuthor(userMapper.toUserDto(user));
+
+        assertNotNull(itemService.addComment(dto, savedItem.getId(), savedUser.getId()));
+    }
+
+    @Test
+    void addCommentNotFoundUser() {
+        User user = new User();
+        user.setName("name");
         user.setEmail("abcde@abcde.com");
         User savedUser = userRepository.save(user);
 
@@ -242,11 +346,17 @@ public class ItemServiceImplTest {
         comment.setItem(item);
         comment.setAuthor(user);
         comment.setCreated(LocalDateTime.of(2024, 12, 23, 10, 0));
-        Comment savedComment = commentRepository.save(comment);
 
-        assertNotNull(savedComment);
-        assertEquals("Test", savedComment.getText());
+        CustomUserNotFoundException exp = assertThrows(
+                CustomUserNotFoundException.class,
+                () -> itemService.addComment(
+                        itemMapper.toCommentDto(comment),
+                        savedItem.getId(),
+                        999L
+                )
+        );
+
+        assertEquals("Пользователь не найден", exp.getMessage());
     }
-
 
 }

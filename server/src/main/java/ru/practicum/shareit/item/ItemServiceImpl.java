@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingService;
+import ru.practicum.shareit.exception.CustomUserNotFoundException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dao.CommentRepository;
@@ -140,7 +141,7 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto addComment(CommentDto commentDto, Long itemId, Long userId) {
 
         if (userService.getUserById(userId) == null) {
-            throw new NotFoundException("Пользователь не найден");
+            throw new CustomUserNotFoundException("Пользователь не найден");
         }
 
         Comment comment = new Comment();
