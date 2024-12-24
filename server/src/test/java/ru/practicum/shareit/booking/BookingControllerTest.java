@@ -21,8 +21,10 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -108,6 +110,69 @@ public class BookingControllerTest {
         when(bookingService.getBookings(any(), anyLong())).thenReturn(Collections.emptyList());
 
         mvc.perform(get("/bookings")
+                        .header("X-Sharer-User-Id", 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
+    }
+
+//    @Test
+//    void bookItem() throws Exception {
+//        when(bookingService.bookItem(any(), anyLong())).thenReturn(bookingDto);
+//
+//        mvc.perform(post("/bookings")
+//                        .header("X-Sharer-User-Id", 1L)
+//                        .characterEncoding(StandardCharsets.UTF_8)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON)
+//                        .content(mapper.writeValueAsString(bookingDto)))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.id", is(bookingDto.getId()), Long.class))
+//                .andExpect(jsonPath("$.start", is(bookingDto.getStart().format(DateTimeFormatter.ISO_DATE_TIME))))
+//                .andExpect(jsonPath("$.end", is(bookingDto.getEnd().format(DateTimeFormatter.ISO_DATE_TIME))))
+//                .andExpect(jsonPath("$.status", is(bookingDto.getStatus()), Status.class))
+//                .andExpect(jsonPath("$.booker", is(bookingDto.getBooker()), UserDto.class))
+//                .andExpect(jsonPath("$.item", is(bookingDto.getItem()), ItemDto.class));
+//    }
+
+    @Test
+    void getBookingById() throws Exception {
+        when(bookingService.getBookingById(anyLong(), anyLong())).thenReturn(bookingDto);
+
+        mvc.perform(get("/bookings/1")
+                        .header("X-Sharer-User-Id", 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(bookingDto.getId()), Long.class))
+                .andExpect(jsonPath("$.start", is(bookingDto.getStart().format(DateTimeFormatter.ISO_DATE_TIME))))
+                .andExpect(jsonPath("$.end", is(bookingDto.getEnd().format(DateTimeFormatter.ISO_DATE_TIME))));
+    }
+
+    @Test
+    void update() throws Exception {
+        when(bookingService.update(anyLong(), anyLong(), any())).thenReturn(bookingDto);
+
+        mvc.perform(get("/bookings/1")
+                        .header("X-Sharer-User-Id", 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mvc.perform(delete("/items/1")
+                .header("X-Sharer-User-Id", 1L)
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    void getBookingsOwner() throws Exception {
+        when(bookingService.getBookingsOwner(anyString(), anyLong())).thenReturn(Collections.emptyList());
+
+        mvc.perform(get("/bookings/owner")
                         .header("X-Sharer-User-Id", 1L)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)

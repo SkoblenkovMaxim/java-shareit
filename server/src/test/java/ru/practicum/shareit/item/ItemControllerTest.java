@@ -132,14 +132,9 @@ public class ItemControllerTest {
 
     @Test
     void deleteItem() throws Exception {
-        itemService.deleteItem(anyLong(), anyLong());
-
-        mvc.perform(get("/items/1")
-                        .header("X-Sharer-User-Id", 1L)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        mvc.perform(delete("/items/1")
+                .header("X-Sharer-User-Id", 1L)
+        ).andExpect(status().isOk());
     }
 
     @Test
