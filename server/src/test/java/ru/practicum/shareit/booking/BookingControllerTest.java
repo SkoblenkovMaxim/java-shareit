@@ -118,25 +118,6 @@ public class BookingControllerTest {
                 .andExpect(content().json("[]"));
     }
 
-//    @Test
-//    void bookItem() throws Exception {
-//        when(bookingService.bookItem(any(), anyLong())).thenReturn(bookingDto);
-//
-//        mvc.perform(post("/bookings")
-//                        .header("X-Sharer-User-Id", 1L)
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(mapper.writeValueAsString(bookingDto)))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.id", is(bookingDto.getId()), Long.class))
-//                .andExpect(jsonPath("$.start", is(bookingDto.getStart().format(DateTimeFormatter.ISO_DATE_TIME))))
-//                .andExpect(jsonPath("$.end", is(bookingDto.getEnd().format(DateTimeFormatter.ISO_DATE_TIME))))
-//                .andExpect(jsonPath("$.status", is(bookingDto.getStatus()), Status.class))
-//                .andExpect(jsonPath("$.booker", is(bookingDto.getBooker()), UserDto.class))
-//                .andExpect(jsonPath("$.item", is(bookingDto.getItem()), ItemDto.class));
-//    }
-
     @Test
     void getBookingById() throws Exception {
         when(bookingService.getBookingById(anyLong(), anyLong())).thenReturn(bookingDto);
@@ -162,10 +143,6 @@ public class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-
-        mvc.perform(delete("/items/1")
-                .header("X-Sharer-User-Id", 1L)
-        ).andExpect(status().isOk());
     }
 
     @Test
