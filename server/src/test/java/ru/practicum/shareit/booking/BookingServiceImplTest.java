@@ -8,7 +8,12 @@ import ru.practicum.shareit.booking.dto.BookUpdateRequestDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
+import ru.practicum.shareit.exception.CustomUserNotFoundException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dao.ItemRepository;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
@@ -16,6 +21,7 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -32,6 +38,12 @@ public class BookingServiceImplTest {
 
     @Autowired
     private BookingService bookingService;
+
+    @Autowired
+    private ItemService itemService;
+
+    @Autowired
+    private ItemMapper itemMapper;
 
     @Test
     void bookItem() {
@@ -62,7 +74,173 @@ public class BookingServiceImplTest {
     }
 
     @Test
+    public void bookItem_ShouldThrowNotFoundException_WhenItemIdIsNull() {
+        BookingInputDto bookingInputDto = new BookingInputDto();
+        User booker = new User();
+        bookingInputDto.setItemId(null);
+
+        assertThrows(NotFoundException.class, () -> bookingService.bookItem(bookingInputDto, booker.getId()));
+    }
+
+    @Test
+    public void bookItem_ShouldThrowValidationException_WhenItemIsNotAvailable() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("a5@a5.com");
+        User savedUser = userRepository.save(user);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(false);
+        item.setOwner(savedUser);
+        Item savedItem = itemRepository.save(item);
+
+        BookingInputDto bookingInputDto = new BookingInputDto();
+        bookingInputDto.setItemId(savedItem.getId());
+        bookingInputDto.setStart(LocalDateTime.parse("2015-08-04T10:11:30"));
+        bookingInputDto.setEnd(LocalDateTime.parse("2015-08-05T10:11:30"));
+
+        assertThrows(ValidationException.class, () -> bookingService.bookItem(bookingInputDto, savedUser.getId()));
+    }
+
+    @Test
+    public void bookItem_ShouldThrowNotFoundException_WhenBookerIsOwner() {
+
+        User user = new User();
+        user.setName("name");
+        user.setEmail("a51@a5.com");
+        User savedUser = userRepository.save(user);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setOwner(savedUser);
+        Item savedItem = itemRepository.save(item);
+
+        BookingInputDto bookingInputDto = new BookingInputDto();
+        bookingInputDto.setItemId(savedItem.getId());
+        bookingInputDto.setStart(LocalDateTime.parse("2015-08-04T10:11:30"));
+        bookingInputDto.setEnd(LocalDateTime.parse("2015-08-05T10:11:30"));
+
+        assertThrows(NotFoundException.class, () -> bookingService.bookItem(bookingInputDto, savedUser.getId()));
+    }
+
+    @Test
     void update() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("a@a.com");
+        User savedUser = userRepository.save(user);
+
+        User userBooker = new User();
+        userBooker.setName("name");
+        userBooker.setEmail("b@b.com");
+        User savedUserBooker = userRepository.save(userBooker);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setOwner(savedUser);
+        Item savedItem = itemRepository.save(item);
+
+        Booking booking = new Booking();
+        booking.setStart(LocalDateTime.parse("2015-08-04T10:11:30"));
+        booking.setEnd(LocalDateTime.parse("2025-08-05T10:11:30"));
+        booking.setItem(savedItem);
+        booking.setBooker(savedUserBooker);
+        booking.setStatus(Status.WAITING);
+        Booking savedBooking = bookingRepository.save(booking);
+
+        BookUpdateRequestDto dto = new BookUpdateRequestDto();
+        dto.setApproved(Boolean.TRUE);
+
+        BookingDto shortDto = bookingService
+                .update(savedBooking.getId(), savedUser.getId(), dto);
+        assertNotNull(shortDto);
+    }
+
+//    @Test
+//    void update_ApproveBooking() {
+//        User user = new User();
+//        user.setName("name");
+//        user.setEmail("a@a.com");
+//        User savedUser = userRepository.save(user);
+//
+//        User userBooker = new User();
+//        userBooker.setName("name");
+//        userBooker.setEmail("b@b.com");
+//        User savedUserBooker = userRepository.save(userBooker);
+//
+//        Item item = new Item();
+//        item.setName("name");
+//        item.setDescription("desc");
+//        item.setAvailable(false);
+//        item.setOwner(savedUser);
+//        Item savedItem = itemRepository.save(item);
+//
+//        Booking booking = new Booking();
+//        booking.setStart(LocalDateTime.parse("2015-08-04T10:11:30"));
+//        booking.setEnd(LocalDateTime.parse("2025-08-05T10:11:30"));
+//        booking.setItem(savedItem);
+//        booking.setBooker(savedUserBooker);
+//        booking.setStatus(Status.APPROVED);
+//        Booking savedBooking = bookingRepository.save(booking);
+//
+//        BookUpdateRequestDto requestDto = new BookUpdateRequestDto();
+//        requestDto.setApproved(false);
+//
+//        // Владелец вещи подтверждает бронирование
+//        Long ownerId = itemService.getItemsByOwner(savedUser.getId()).getFirst().getOwner().getId();
+//
+//        BookingDto updatedBooking = bookingService.update(savedBooking.getId(), ownerId, requestDto);
+//
+//        assertThat(updatedBooking.getStatus()).isEqualTo(Status.APPROVED);
+//    }
+
+    @Test
+    void testUpdateBooking_CancelBooking() {
+
+        User user = new User();
+        user.setName("name");
+        user.setEmail("a@a.com");
+        User savedUser = userRepository.save(user);
+
+        User userBooker = new User();
+        userBooker.setName("name");
+        userBooker.setEmail("b@b.com");
+        User savedUserBooker = userRepository.save(userBooker);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setOwner(savedUser);
+        Item savedItem = itemRepository.save(item);
+
+        Booking booking = new Booking();
+        booking.setStart(LocalDateTime.parse("2015-08-04T10:11:30"));
+        booking.setEnd(LocalDateTime.parse("2025-08-05T10:11:30"));
+        booking.setItem(savedItem);
+        booking.setBooker(savedUserBooker);
+        booking.setStatus(Status.CANCELED);
+
+        Booking savedBooking = bookingRepository.save(booking);
+
+        BookUpdateRequestDto requestDto = new BookUpdateRequestDto();
+        requestDto.setApproved(false);
+
+        ValidationException exp = assertThrows(ValidationException.class,
+                () -> bookingService.update(booking.getId(), savedUser.getId(), requestDto));
+
+        assertEquals("Бронирование было отменено!", exp.getMessage());
+    }
+
+    @Test
+    public void update_UserNotFound() {
+
         User user = new User();
         user.setName("name");
         user.setEmail("a@a.com");
@@ -89,12 +267,35 @@ public class BookingServiceImplTest {
 
         Booking savedBooking = bookingRepository.save(booking);
 
-        BookUpdateRequestDto dto = new BookUpdateRequestDto();
-        dto.setApproved(Boolean.TRUE);
+        BookUpdateRequestDto requestDto = new BookUpdateRequestDto();
+        requestDto.setApproved(false);
 
-        BookingDto shortDto = bookingService
-                .update(savedBooking.getId(), savedUser.getId(), dto);
-        assertNotNull(shortDto);
+        Long invalidUserId = 999L; // Несуществующий пользователь
+
+        CustomUserNotFoundException exception = assertThrows(CustomUserNotFoundException.class, () -> {
+            bookingService.update(savedBooking.getId(), invalidUserId, requestDto);
+        });
+
+        assertThat(exception.getMessage()).isEqualTo("Пользователь не найден");
+    }
+
+    @Test
+    public void update_BookingNotFound() {
+        BookUpdateRequestDto requestDto = new BookUpdateRequestDto();
+        requestDto.setApproved(false);
+
+        User user = new User();
+        user.setName("name");
+        user.setEmail("a@a.com");
+        User savedUser = userRepository.save(user);
+
+        Long invalidBookingId = 999L; // Несуществующее бронирование
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            bookingService.update(invalidBookingId, savedUser.getId(), requestDto);
+        });
+
+        assertEquals("Бронирование с ID=999 не найдено!", exception.getMessage());
     }
 
     @Test

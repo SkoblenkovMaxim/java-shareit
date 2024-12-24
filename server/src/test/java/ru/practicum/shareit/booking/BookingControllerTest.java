@@ -119,6 +119,28 @@ public class BookingControllerTest {
     }
 
     @Test
+    void bookItem() throws Exception {
+        when(bookingService.bookItem(new BookingInputDto(), 1L))
+                .thenReturn(new BookingDto());
+        when(userRepository.existsById(anyLong())).thenReturn(Boolean.TRUE);
+        mvc.perform(post("/bookings")
+                .header("X-Sharer-User-Id", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(new BookingDto()))
+        ).andExpect(status().isOk());
+    }
+
+//    @Test
+//    void bookItem_NotFoundUser() throws Exception {
+//        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+//
+//        CustomUserNotFoundException exp = assertThrows(CustomUserNotFoundException.class,
+//                () -> bookingService.bookItem(new BookingInputDto(), 999L));
+//
+//        assertEquals("Пользователь не найден", exp.getMessage());
+//    }
+
+    @Test
     void getBookingById() throws Exception {
         when(bookingService.getBookingById(anyLong(), anyLong())).thenReturn(bookingDto);
 
@@ -135,14 +157,16 @@ public class BookingControllerTest {
 
     @Test
     void update() throws Exception {
-        when(bookingService.update(anyLong(), anyLong(), any())).thenReturn(bookingDto);
+        when(bookingService.update(1L, 1L, new BookUpdateRequestDto()))
+                .thenReturn(new BookingDto());
 
-        mvc.perform(get("/bookings/1")
-                        .header("X-Sharer-User-Id", 1L)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        mvc.perform(patch("/bookings/1")
+                .header("X-Sharer-User-Id", 1L)
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(new BookUpdateRequestDto()))
+        ).andExpect(status().isOk());
     }
 
     @Test

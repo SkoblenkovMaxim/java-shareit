@@ -9,6 +9,7 @@ import ru.practicum.shareit.booking.dto.BookUpdateRequestDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
+import ru.practicum.shareit.exception.CustomUserNotFoundException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemService;
@@ -62,10 +63,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto update(Long bookingId, Long userId, BookUpdateRequestDto bookUpdateRequestDto) {
-
-        if (userService.getUserById(userId) == null) {
-            throw new NotFoundException("Пользователь не найден");
-        }
+        isUserNotFound(userId);
 
         Booking booking = repository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Бронирование с ID=" + bookingId + " не найдено!"));
@@ -106,9 +104,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto getBookingById(Long bookingId, Long userId) {
 
-        if (userService.getUserById(userId) == null) {
-            throw new NotFoundException("Пользователь не найден");
-        }
+        isUserNotFound(userId);
 
         Booking booking = repository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Бронирование с ID=" + bookingId + " не найдено!"));
@@ -124,9 +120,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getBookings(String state, Long userId) {
 
-        if (userService.getUserById(userId) == null) {
-            throw new NotFoundException("Пользователь не найден");
-        }
+        isUserNotFound(userId);
 
         List<Booking> bookings;
         Sort sortByStartDesc = Sort.by(Sort.Direction.DESC, "start");
@@ -162,9 +156,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getBookingsOwner(String state, Long userId) {
 
-        if (userService.getUserById(userId) == null) {
-            throw new NotFoundException("Пользователь не найден");
-        }
+        isUserNotFound(userId);
 
         List<Booking> bookings;
         Sort sortByStartDesc = Sort.by(Sort.Direction.DESC, "start");
@@ -207,15 +199,13 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingShortDto getNextBooking(Long itemId) {
 
-        return mapper.toBookingShortDto(repository.findNextBookingAfterEnd(itemId,
-                LocalDateTime.now()));
+        return mapper.toBookingShortDto(repository.findNextBookingAfterEnd(itemId, LocalDateTime.now()));
     }
 
     @Override
     public Booking getBookingWithUserBookedItem(Long itemId, Long userId) {
 
-        return repository.findLastBookingByUserAndStatus(itemId,
-                userId, LocalDateTime.now(), Status.APPROVED);
+        return repository.findLastBookingByUserAndStatus(itemId, userId, LocalDateTime.now(), Status.APPROVED);
     }
 
     public void isGetEnd(Long bookingId) {
@@ -223,6 +213,12 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Бронирование с ID=" + bookingId + " не найдено!"));
         if (booking.getEnd().isBefore(LocalDateTime.now())) {
             throw new ValidationException("Время бронирования уже истекло!");
+        }
+    }
+
+    public void isUserNotFound(Long userId) {
+        if (userService.getUserById(userId) == null) {
+            throw new CustomUserNotFoundException("Пользователь не найден");
         }
     }
 }

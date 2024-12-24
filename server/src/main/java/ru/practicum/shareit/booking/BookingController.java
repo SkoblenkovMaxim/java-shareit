@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookUpdateRequestDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
-import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.CustomUserNotFoundException;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dao.UserRepository;
 
@@ -71,7 +71,7 @@ public class BookingController {
 
     private void existUser(@RequestHeader(USER_ID) Long userId) {
         if (!userRepository.existsById(userId) || userId == null) {
-            throw new NotFoundException("Пользователь не найден");
+            throw new CustomUserNotFoundException("Пользователь не найден");
         }
     }
 }
