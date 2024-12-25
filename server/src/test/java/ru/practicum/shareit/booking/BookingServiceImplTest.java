@@ -162,46 +162,8 @@ public class BookingServiceImplTest {
         assertNotNull(shortDto);
     }
 
-//    @Test
-//    void update_ApproveBooking() {
-//        User user = new User();
-//        user.setName("name");
-//        user.setEmail("a@a.com");
-//        User savedUser = userRepository.save(user);
-//
-//        User userBooker = new User();
-//        userBooker.setName("name");
-//        userBooker.setEmail("b@b.com");
-//        User savedUserBooker = userRepository.save(userBooker);
-//
-//        Item item = new Item();
-//        item.setName("name");
-//        item.setDescription("desc");
-//        item.setAvailable(false);
-//        item.setOwner(savedUser);
-//        Item savedItem = itemRepository.save(item);
-//
-//        Booking booking = new Booking();
-//        booking.setStart(LocalDateTime.parse("2015-08-04T10:11:30"));
-//        booking.setEnd(LocalDateTime.parse("2025-08-05T10:11:30"));
-//        booking.setItem(savedItem);
-//        booking.setBooker(savedUserBooker);
-//        booking.setStatus(Status.APPROVED);
-//        Booking savedBooking = bookingRepository.save(booking);
-//
-//        BookUpdateRequestDto requestDto = new BookUpdateRequestDto();
-//        requestDto.setApproved(false);
-//
-//        // Владелец вещи подтверждает бронирование
-//        Long ownerId = itemService.getItemsByOwner(savedUser.getId()).getFirst().getOwner().getId();
-//
-//        BookingDto updatedBooking = bookingService.update(savedBooking.getId(), ownerId, requestDto);
-//
-//        assertThat(updatedBooking.getStatus()).isEqualTo(Status.APPROVED);
-//    }
-
     @Test
-    void testUpdateBooking_CancelBooking() {
+    void update_CancelBooking() {
 
         User user = new User();
         user.setName("name");
@@ -361,6 +323,18 @@ public class BookingServiceImplTest {
         List<BookingDto> dtoList = bookingService
                 .getBookings("ALL", savedUserBooker.getId());
         assertFalse(dtoList.isEmpty());
+    }
+
+    @Test
+    void getBookings_shouldThrowValidationException_whenStateIsUnknown() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("a@a.com");
+        User savedUser = userRepository.save(user);
+
+        assertThrows(ValidationException.class, () -> {
+            bookingService.getBookings("UNKNOWN_STATE", savedUser.getId());
+        });
     }
 
     @Test
