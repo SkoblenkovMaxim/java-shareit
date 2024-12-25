@@ -338,6 +338,28 @@ public class BookingServiceImplTest {
     }
 
     @Test
+    void getBookings_shouldReturnRejectedBookings_whenStateIsRejected() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("a@a.com");
+        User savedUser = userRepository.save(user);
+
+        List<BookingDto> bookings = bookingService.getBookings("REJECTED", savedUser.getId());
+        assertEquals(0, bookings.size());
+    }
+
+    @Test
+    void getBookings_shouldReturnWaitingBookings_whenStateIsWaiting() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("a52@a.com");
+        User savedUser = userRepository.save(user);
+
+        List<BookingDto> bookings = bookingService.getBookings("WAITING", savedUser.getId());
+        assertEquals(0, bookings.size());
+    }
+
+    @Test
     void getBookingsOwner() {
         User user = new User();
         user.setName("name");
@@ -368,6 +390,29 @@ public class BookingServiceImplTest {
         List<BookingDto> dtoList = bookingService
                 .getBookingsOwner("ALL", savedUser.getId());
         assertFalse(dtoList.isEmpty());
+    }
+
+    @Test
+    void getBookingsOwner_shouldThrowValidationException_whenStateIsUnknown() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("a@a.com");
+        User savedUser = userRepository.save(user);
+
+        assertThrows(ValidationException.class, () -> {
+            bookingService.getBookingsOwner("UNKNOWN_STATE", savedUser.getId());
+        });
+    }
+
+    @Test
+    void getBookingsOwner_shouldReturnRejectedBookings_whenStateIsRejected() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("a@a.com");
+        User savedUser = userRepository.save(user);
+
+        List<BookingDto> bookings = bookingService.getBookingsOwner("REJECTED", savedUser.getId());
+        assertEquals(1, bookings.size());
     }
 
     @Test

@@ -130,16 +130,6 @@ public class BookingControllerTest {
         ).andExpect(status().isOk());
     }
 
-//    @Test
-//    void bookItem_NotFoundUser() throws Exception {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-//
-//        CustomUserNotFoundException exp = assertThrows(CustomUserNotFoundException.class,
-//                () -> bookingService.bookItem(new BookingInputDto(), 999L));
-//
-//        assertEquals("Пользователь не найден", exp.getMessage());
-//    }
-
     @Test
     void getBookingById() throws Exception {
         when(bookingService.getBookingById(anyLong(), anyLong())).thenReturn(bookingDto);
