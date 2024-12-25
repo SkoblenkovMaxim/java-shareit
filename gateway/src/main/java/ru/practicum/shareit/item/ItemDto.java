@@ -7,13 +7,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import java.io.Serializable;
 import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ItemDto implements Serializable {
+public class ItemDto {
     private Long id; // id вещи
     @NotNull
     @NotBlank
