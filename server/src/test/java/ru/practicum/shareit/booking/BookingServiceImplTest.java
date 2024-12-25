@@ -526,6 +526,7 @@ public class BookingServiceImplTest {
                 .getBookingsOwner("FUTURE", savedUser.getId());
         assertEquals(1, bookings.size());
     }
+
     @Test
     void getBookings_shouldReturnPastBookings_whenStateIsPAST() {
         User user = new User();
