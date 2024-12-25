@@ -526,6 +526,38 @@ public class BookingServiceImplTest {
                 .getBookingsOwner("FUTURE", savedUser.getId());
         assertEquals(1, bookings.size());
     }
+    @Test
+    void getBookings_shouldReturnPastBookings_whenStateIsPAST() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("a@a.com");
+        User savedUser = userRepository.save(user);
+
+        User userBooker = new User();
+        userBooker.setName("name");
+        userBooker.setEmail("b@b.com");
+        User savedUserBooker = userRepository.save(userBooker);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setOwner(savedUser);
+        Item savedItem = itemRepository.save(item);
+
+        Booking booking = new Booking();
+        booking.setStart(LocalDateTime.parse("2015-08-04T10:11:30"));
+        booking.setEnd(LocalDateTime.parse("2015-08-05T10:11:30"));
+        booking.setItem(savedItem);
+        booking.setBooker(savedUserBooker);
+        booking.setStatus(Status.WAITING);
+
+        bookingRepository.save(booking);
+
+        List<BookingDto> bookings = bookingService
+                .getBookings("PAST", savedUserBooker.getId());
+        assertEquals(1, bookings.size());
+    }
 
     @Test
     void getBookingsOwner_shouldReturnWAITINGBookings_whenStateIsWAITING() {
@@ -590,6 +622,39 @@ public class BookingServiceImplTest {
 
         List<BookingDto> bookings = bookingService
                 .getBookingsOwner("REJECTED", savedUser.getId());
+        assertEquals(1, bookings.size());
+    }
+
+    @Test
+    void getBookings_shouldReturnFUTUREBookings_whenStateIsFUTURE() {
+        User user = new User();
+        user.setName("name");
+        user.setEmail("a@a.com");
+        User savedUser = userRepository.save(user);
+
+        User userBooker = new User();
+        userBooker.setName("name");
+        userBooker.setEmail("b@b.com");
+        User savedUserBooker = userRepository.save(userBooker);
+
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("desc");
+        item.setAvailable(true);
+        item.setOwner(savedUser);
+        Item savedItem = itemRepository.save(item);
+
+        Booking booking = new Booking();
+        booking.setStart(LocalDateTime.parse("2025-08-04T10:11:30"));
+        booking.setEnd(LocalDateTime.parse("2025-08-05T10:11:30"));
+        booking.setItem(savedItem);
+        booking.setBooker(savedUserBooker);
+        booking.setStatus(Status.WAITING);
+
+        bookingRepository.save(booking);
+
+        List<BookingDto> bookings = bookingService
+                .getBookings("FUTURE", savedUserBooker.getId());
         assertEquals(1, bookings.size());
     }
 
